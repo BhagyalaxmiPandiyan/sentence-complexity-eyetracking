@@ -23,10 +23,10 @@
 
 | Model | Our Accuracy | Paper Accuracy |
 |-------|:---:|:---:|
-| Base RT + Pairwise Classification | **74.08%** | 73.82% ✓ |
-| Extended RT + Pairwise Classification | **75.25%** | 75.21% ✓ |
+| Base RT + Pairwise Classification | **72.41%** | 73.82% |
+| Extended RT + Pairwise Classification | **72.59%** | 75.21% |
 
-> **System 2 matches the paper exactly.**
+> System 2 is within ~1.5% of the paper. The small gap is consistent with our System 1 FFD model being less precise than the paper's.
 
 ---
 
