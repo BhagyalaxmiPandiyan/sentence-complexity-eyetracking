@@ -1,0 +1,32 @@
+# Licensed / large datasets (not for redistribution)
+Dataset/
+
+# Generated output files (too large for GitHub)
+output/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+env/
+.env
+
+# IDE / OS
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# Claude Code internal
+.claude/
+
+# Parser binaries / model caches
+calc-fabp-model/
+parser-x-efabp/
+*.model
+*.linetrees
