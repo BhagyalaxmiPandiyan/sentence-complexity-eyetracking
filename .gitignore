@@ -1,7 +1,8 @@
-# Licensed / large datasets (not for redistribution)
-Dataset/
+# BNC is too large for GitHub (4.4 GB folder + 538 MB zip); store on Google Drive
+Dataset/BNC/
+Dataset/BNC.zip
 
-# Generated output files (too large for GitHub)
+# Generated output files (large; re-created by running the pipeline)
 output/
 
 # Python cache

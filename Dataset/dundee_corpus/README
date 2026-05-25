@@ -1,0 +1,26 @@
+1.	10 native English-speaking subjects participated in the English experiments reading 20 articles.
+2.	Data has reading times along with various other reading time cognitive measurements for each words.
+3.	Data record and creation has been done in two approach each resulting in 200 files.
+4.	RT_dataset1P: Data record in the order in which events occurred: Total files= 20*10= 200
+5.	RT_dataset2P: Data record in the order in which word occurred i.e., words that are fixated more than once are coded separately. Here again, #files= 20*10= 200
+7.	Hence, total files for the English Eye tracking corpus for reading measures= 400
+
+Folders:
+
+per-word-info : Contains word information. The headers discription can be found in Corpus_notes_v2.doc
+RT_dataset1P : Type 1 dataset : Description can be found in the Corpus_notes_v2.doc
+RT_dataset2P : Type 2 dataset : Description can be found in the Corpus_notes_v2.doc
+Sentences : This has simple sentences for the 20 files
+
+per-word-lexical-annotation : Contains dependency information with headers description as below.
+
+Col1 : Word
+Col2 : POS tag
+Col3 : Itemno		contains the number of the article (1-20) of the Dundee corpus.
+Col4 : WNUM		contains a word number that maps to the Dundee Corpus. The Dundee corpus has punctuation and contractions glued to the main word. For this version we separated them but kept the same WNUM for both parts
+Col5 : SentenceID	Unique SentenceID within the same Itemno.
+Col6 : ID 		Unique word ID within the same SentenceID. This column is referred to in the col DepRel
+Col7 : CPOS		Penn Treebank Part-of-speech
+Col8 : Head		The ID of the head of this word
+Col9 : DepRel		The type of dependency relation to the head
+
