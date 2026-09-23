@@ -11,17 +11,29 @@ Pipeline:
   7. Save to output/lcparse_syn_surprisal.csv
 """
 
-import os, sys, re, math, csv, subprocess, tempfile
+import os, sys, re, math, csv, subprocess, tempfile, platform
 from collections import defaultdict
 from nltk import Tree
 
-BASE    = '/mnt/e/Project/Final One'
+# When run from Windows, re-launch the whole script inside WSL so that Linux
+# binaries (linetrees2synprocdecpars, Berkeley parser) run natively without
+# per-sentence WSL process-spawn overhead.
+if platform.system() == 'Windows' and os.environ.get('_IN_WSL') != '1':
+    script_wsl = '/mnt/e/Project/Final One/phase1_replication/experiments/build_lcparse_surprisal.py'
+    result = subprocess.run(
+        ['wsl', '-d', 'Ubuntu', 'env', '_IN_WSL=1',
+         'python3', script_wsl],
+        env=os.environ
+    )
+    sys.exit(result.returncode)
+
+BASE    = '/mnt/e/Project/Final One/phase1_replication'
 PTB_DIR = BASE + '/Dataset/penn_treebank_3/parsed/mrg/wsj'
 OUT_DIR = BASE + '/output'
-LEX_CSV = OUT_DIR + '/lexical_features.csv'
-OUT_CSV = OUT_DIR + '/lcparse_syn_surprisal.csv'
+LEX_CSV    = OUT_DIR + '/lexical_features.csv'
+OUT_CSV    = OUT_DIR + '/lcparse_syn_surprisal.csv'
 
-BINARY     = '/tmp/linetrees2synprocdecpars'
+BINARY     = '/home/bhagya/linetrees2synprocdecpars'
 RELFREQ    = '/home/bhagya/modelblocks-release/resource-incrsem/scripts/relfreq.py'
 BERK_JAR   = '/home/berkeleyparser/BerkeleyParser-1.7.jar'
 BERK_GR    = '/home/berkeleyparser/eng_sm6.gr'
@@ -121,7 +133,7 @@ def run_decpars(linetrees_path, decpars_path):
     print(f'  Running linetrees2synprocdecpars on {linetrees_path}...')
     with open(linetrees_path) as fin, open(decpars_path, 'w') as fout:
         result = subprocess.run(
-            [BINARY],
+            BINARY,
             stdin=fin, stdout=fout, stderr=subprocess.PIPE, text=True
         )
     if result.returncode != 0:
@@ -355,7 +367,7 @@ def compute_surprisal_from_decisions(dundee_linetrees, model, sent_keys, valid):
         wnums = sent_wnums[key]
         try:
             proc = subprocess.run(
-                [BINARY],
+                BINARY,
                 input=tree_str + '\n',
                 capture_output=True, text=True,
                 timeout=SENT_TIMEOUT

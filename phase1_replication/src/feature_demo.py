@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 from collections import defaultdict
 
-BASE = "e:/Project/Final One"
+BASE = "e:/Project/Final One/phase1_replication"
 os.makedirs(BASE + "/output", exist_ok=True)
 
 SEP = "=" * 70

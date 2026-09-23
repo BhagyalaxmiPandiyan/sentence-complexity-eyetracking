@@ -1,4 +1,4 @@
-  """
+    """
 Step 2: Extract lexical features for each word in the Dundee corpus.
 
 Features (paper Section 3.2):
@@ -16,13 +16,13 @@ Note: BNC parsing is slow on first run (~20-40 min for 4049 files).
       Result is cached to output/bnc_bigrams.csv for reuse.
 """
 
-import os, re, math, gzip
+import os, re, math
 import pandas as pd
 import numpy as np
 from collections import defaultdict
 
-DATASET = "e:/Project/Final One/Dataset"
-OUT     = "e:/Project/Final One/output"
+DATASET = "e:/Project/Final One/phase1_replication/Dataset"
+OUT     = "e:/Project/Final One/phase1_replication/output"
 os.makedirs(OUT, exist_ok=True)
 
 
@@ -190,7 +190,7 @@ def compute_transition_probs(word_list, fwd_counts, bwd_counts, unigrams):
             prev = str(raw_p).lower().strip(".,!?;:'\"()") if isinstance(raw_p, str) else ""
             fwd_count = fwd_counts.get(prev, {}).get(w, 0)
             prev_total = unigrams.get(prev, 0)
-            fwd_p = (fwd_count + 1) / (prev_total + len(unigrams))
+                      
         else:
             fwd_p = 1.0 / max(len(unigrams), 1)
 

@@ -17,8 +17,8 @@ import numpy as np
 from collections import defaultdict
 
 import platform
-BASE = ("/mnt/e/Project/Final One" if platform.system() == "Linux"
-        else "e:/Project/Final One")
+BASE = ("/mnt/e/Project/Final One/phase1_replication" if platform.system() == "Linux"
+        else "e:/Project/Final One/phase1_replication")
 OUT     = BASE + "/output"
 DATASET = BASE + "/Dataset"
 PTB_TAR = DATASET + "/penn_treebank_3.tar.bz2"

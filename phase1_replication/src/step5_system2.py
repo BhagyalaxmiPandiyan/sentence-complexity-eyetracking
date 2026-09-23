@@ -23,11 +23,11 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 
 if platform.system() == "Linux":
-    OUT     = "/mnt/e/Project/Final One/output"
-    DATASET = "/mnt/e/Project/Final One/Dataset"
+    OUT     = "/mnt/e/Project/Final One/phase1_replication/output"
+    DATASET = "/mnt/e/Project/Final One/phase1_replication/Dataset"
 else:
-    OUT     = "e:/Project/Final One/output"
-    DATASET = "e:/Project/Final One/Dataset"
+    OUT     = "e:/Project/Final One/phase1_replication/output"
+    DATASET = "e:/Project/Final One/phase1_replication/Dataset"
 os.makedirs(OUT, exist_ok=True)
 
 

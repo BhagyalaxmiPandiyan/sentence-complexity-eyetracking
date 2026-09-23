@@ -22,8 +22,8 @@ from collections import defaultdict
 
 import numpy as np
 
-DATASET = "e:/Project/Final One/Dataset"
-OUT     = "e:/Project/Final One/output"
+DATASET = "e:/Project/Final One/phase1_replication/Dataset"
+OUT     = "e:/Project/Final One/phase1_replication/output"
 
 PTB_POS_TAGS = frozenset([
     "CC", "CD", "DT", "EX", "FW", "IN", "JJ", "JJR", "JJS", "LS", "MD",

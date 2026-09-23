@@ -25,8 +25,8 @@ from sklearn.metrics import r2_score
 import pickle
 
 import platform
-OUT = ("/mnt/e/Project/Final One/output" if platform.system() == "Linux"
-       else "e:/Project/Final One/output")
+OUT = ("/mnt/e/Project/Final One/phase1_replication/output" if platform.system() == "Linux"
+       else "e:/Project/Final One/phase1_replication/output")
 os.makedirs(OUT, exist_ok=True)
 
 
@@ -88,6 +88,18 @@ def load_data(normalize_per_subject=False):
         df = lex.copy()
 
     df = df.merge(syn, on=["text_id", "wnum"], how="left")
+
+    # Use LC parser syn_surprisal (van Schijndel et al. 2013) — paper method
+    # Zero values = sentence-initial words or boundary positions (correct, not fallback)
+    lc_path = os.path.join(OUT, "lcparse_syn_surprisal.csv")
+    if os.path.exists(lc_path):
+        lc = pd.read_csv(lc_path).rename(columns={"syn_surp_pcfg": "syn_surp_lc"})
+        df = df.merge(lc, on=["text_id", "wnum"], how="left")
+        mask = df["syn_surp_lc"].notna()
+        df.loc[mask, "syn_surprisal"] = df.loc[mask, "syn_surp_lc"]
+        df["total_surprisal"] = df["lex_surprisal"] + df["syn_surprisal"]
+        df = df.drop(columns=["syn_surp_lc"])
+        print(f"  LC parser surprisal applied: {mask.sum():,} words")
 
     # Fill any NaN features with column mean
     for col in ALL_FEATURES:

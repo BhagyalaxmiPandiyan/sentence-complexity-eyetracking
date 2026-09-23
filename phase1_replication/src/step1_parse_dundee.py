@@ -1,4 +1,4 @@
-  """
+"""
 Step 1: Parse Dundee eye-tracking corpus and compute 4 RT measures per word.
 
 File structure discovered:
@@ -19,8 +19,8 @@ Output: output/dundee_rt.csv  (one row per word token, averaged across subjects)
 import os, re
 import pandas as pd
 
-DUNDEE = "e:/Project/Final One/Dataset/dundee_corpus"
-OUT    = "e:/Project/Final One/output"
+DUNDEE = "e:/Project/Final One/phase1_replication/Dataset/dundee_corpus"
+OUT    = "e:/Project/Final One/phase1_replication/output"
 os.makedirs(OUT, exist_ok=True)
 
 
@@ -32,7 +32,7 @@ def parse_rt2p_file(path):
     """
     rows = []
     try:
-        with open(path, encoding="latin-1") as f:
+        with open(path, encoding="latin-1") as f:   
             for i, line in enumerate(f):
                 if i == 0:
                     continue
