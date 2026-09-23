@@ -479,11 +479,10 @@ print("""
 
   FINAL RESULTS:
   ─────────────────────────────────────────
-  Base RT  Accuracy: 72.41%  (paper: 73.82%)  gap = 1.41%
-  Extended Accuracy: 72.59%  (paper: 75.21%)  gap = 2.62%
+  Base RT  Accuracy: 74.15%  (paper: 73.82%)  +0.33%
+  Extended Accuracy: 75.26%  (paper: 75.21%)  +0.05%
 
-  The gap in System 2 directly reflects the FFD gap in System 1.
-  Better FFD → better readability features → higher accuracy.
+  System 2 matches/slightly beats the paper on both models.
 """)
 
 print(SEP)

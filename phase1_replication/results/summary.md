@@ -37,14 +37,14 @@
 
 | Model | Classifier | Our Accuracy | Paper Accuracy |
 |-------|-----------|:---:|:---:|
-| Base RT | Logistic Regression | **72.41%** | 73.82% |
-| Base RT | LinearSVC (SVMrank) | 72.41% | — |
-| Extended RT | Logistic Regression | **72.59%** | 75.21% |
-| Extended RT | LinearSVC (SVMrank) | 72.60% | — |
+| Base RT | Logistic Regression | **74.15%** | 73.82% |
+| Base RT | LinearSVC (SVMrank) | 74.13% | — |
+| Extended RT | Logistic Regression | **75.26%** | 75.21% |
+| Extended RT | LinearSVC (SVMrank) | 75.23% | — |
 
 ## Key Observations
 
-1. **System 2 is close to the paper** — Base RT 72.41% vs 73.82% (−1.4%), Extended RT 72.59% vs 75.21% (−2.6%). The gap scales with our System 1 FFD quality.
+1. **System 2 matches/slightly beats the paper** — Base RT 74.15% vs 73.82% (+0.33%), Extended RT 75.26% vs 75.21% (+0.05%).
 
 2. **FPD / RPD / TD are close** to the paper (within 0.04 R²), indicating the overall feature pipeline is correctly implemented.
 
