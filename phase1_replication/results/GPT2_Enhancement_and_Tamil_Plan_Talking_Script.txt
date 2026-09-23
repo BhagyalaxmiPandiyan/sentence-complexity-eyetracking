@@ -1,0 +1,255 @@
+TALKING SCRIPT — Progress Meeting with Professor
+Phase 2 (GPT-2 Enhancement) Results + Phase 3 (Tamil) Proposal
+Bhagyalaxmi Pandiyan  |  Deck: GPT2_Enhancement_and_Tamil_Plan.pptx
+==============================================================================
+HOW TO USE THIS SCRIPT
+------------------------------------------------------------------------------
+Each slide has: (1) what to SAY, (2) what CODE TO SHOW, if any, and (3) the
+exact command to run it live if you want a live demo instead of a screenshot.
+Slides 1-8 = Part 1, previous work. Slides 9-12 = Part 2, the Tamil proposal
+(no code yet — it's a plan, say so plainly, don't fake a demo for it).
+
+BEFORE YOU START — have these open in separate tabs/terminal:
+  - VS Code: phase1_replication/experiments/compute_gpt2_surprisal.py
+  - VS Code: phase1_replication/experiments/train_system1_gpt2.py
+  - VS Code: phase1_replication/experiments/fixated_only_system1.py
+  - VS Code: phase1_replication/experiments/gpt2_sentence_correlation.py
+  - Terminal, cwd = phase1_replication/
+  - phase1_replication/README.md (fallback if live run fails or no time)
+==============================================================================
+
+SLIDE 1: Title
+------------------------------------------------------------------------------
+SAY:
+"Good [morning/afternoon]. Today I want to cover two things: what I found
+after taking the replication further with GPT-2, and a proposal for what
+I'd like to work on next — extending this to Tamil. I'll show the code and
+live numbers as I go, not just the slides."
+CODE TO SHOW: none.
+[~50 words, ~22 sec]
+
+
+SLIDE 2: Recap — What We Replicated
+------------------------------------------------------------------------------
+SAY:
+"Quick recap since we last spoke. System 1 predicts four eye-tracking
+reading-time measures per word — FFD, FPD, RPD, TD — from 17 linguistic
+features. System 2 takes those predictions and classifies which of two
+parallel sentences, Wikipedia vs. Simple Wikipedia, is harder to read. Both
+are fully replicated on the Dundee corpus, 50,647 words, 2,378 sentences."
+CODE TO SHOW (optional, only if he asks for a refresher):
+  phase1_replication/src/feature_demo.py — run it live to show one real word
+  ('tourists') traced through all 17 features with actual computed values.
+  COMMAND: python src/feature_demo.py
+Don't run this unless asked — it's a recap slide, keep it brief and move to
+the actual new work.
+[~68 words, ~30 sec]
+
+
+SLIDE 3: Why We Turned to GPT-2
+------------------------------------------------------------------------------
+SAY:
+"The paper's syntactic surprisal feature — from an incremental left-corner
+parser — turned out to carry almost no signal for FFD. I measured r equals
+minus 0.017. And I cross-checked this against the paper's own Table 1: they
+report minus 0.067 for the same feature in their own data. So this isn't a
+bug in my pipeline, it's a real property of that feature. That raised the
+question: could a modern language model's surprisal do better than a
+hand-built parser's?"
+CODE TO SHOW:
+  experiments/train_system1_gpt2.py, lines 76-80 — the "Sanity: correlation"
+  block at the bottom of main(). This is where syn_surprisal's r=-0.017 gets
+  printed alongside gpt2_surprisal's r, in the same run, same data — good
+  evidence it's an apples-to-apples comparison.
+  COMMAND (only if you want it live, takes a few seconds since data is
+  already cached): python experiments/train_system1_gpt2.py
+[~85 words, ~37 sec]
+
+
+SLIDE 4: Method
+------------------------------------------------------------------------------
+SAY:
+"The method: compute GPT-2 surprisal per word — how unpredictable each word
+is given what came before, including up to 3 preceding sentences as context
+— then swap it in for syn_surprisal in the same 19-feature model I already
+had. Same 60/20/20 sentence-level split, same Ridge regression, no other
+part of the pipeline touched. And I tested this across all four reading-time
+measures, not just FFD."
+CODE TO SHOW:
+  experiments/compute_gpt2_surprisal.py, function word_token_surprisals()
+  (lines 66-118). Walk through it briefly:
+    - line 74-75: sentence is split into words, context is prepended
+    - line 84-91: GPT-2 forward pass, take -log P(token | previous tokens)
+      for each subword token — that's the actual surprisal formula
+    - line 93-116: sum subtoken surprisal back up to whole-word surprisal,
+      using token END position (not start) to correctly attribute
+      sentence-initial words after a context boundary — mention this was a
+      real bug you caught and fixed (BPE merges a leading space into the
+      next word's first token)
+  Then: experiments/train_system1_gpt2.py, function add_gpt2_feature()
+  (lines 27-31) and the three variants dict (lines 59-63) — baseline / add /
+  swap — to show exactly how the comparison is set up.
+[~92 words, ~40 sec]
+
+
+SLIDE 5: Results (Table 3)
+------------------------------------------------------------------------------
+SAY:
+"Here are the numbers, re-run live so they're directly reproducible. RPD and
+TD now beat the paper outright. FPD is within 0.017. FFD is the one that
+still trails — but it improved too, from 0.444 baseline to 0.458 with
+GPT-2. The pattern makes sense: FFD is a single brief first glance, the
+other three integrate more reading behavior, so they have more room for a
+richer predictability signal like GPT-2's to help."
+CODE TO SHOW — live demo, this is the centerpiece, worth running live:
+  COMMAND: python experiments/train_system1_gpt2.py --surprisal-file output/gpt2_surprisal_gpt2_ctx.csv
+  This prints a table: Measure | baseline | gpt2_added | gpt2_swap, for all
+  4 measures in one run. Point at the FFD/FPD/RPD/TD rows as you say the
+  numbers above.
+[~78 words, ~34 sec, +~10-20 sec for the script to run]
+
+
+SLIDE 6: Feature Quality Checks
+------------------------------------------------------------------------------
+SAY:
+"Before trusting this feature, I checked it wasn't just a duplicate of
+something I already had. Correlation with syn_surprisal is 0.014 —
+essentially zero, so it's genuinely new signal. It does correlate moderately
+with lexical surprisal and frequency, which is expected, they're all
+predictability-flavored features. One trap I caught: if you sum GPT-2
+surprisal over a whole sentence, that sum correlates 0.914 with sentence
+length — it's just counting words in disguise. I used the mean instead,
+which stays a clean predictability signal."
+CODE TO SHOW:
+  experiments/gpt2_sentence_correlation.py — run it to print the full
+  correlation matrix (gpt2_surprisal vs syn_surprisal/lex_surprisal/
+  wiki_freq/aoa_mean/wlen, plus the gpt2_sum vs sent_len r=0.914 trap).
+  COMMAND: python experiments/gpt2_sentence_correlation.py
+[~89 words, ~39 sec]
+
+
+SLIDE 7: Ruling Out a Wrong Explanation
+------------------------------------------------------------------------------
+SAY:
+"I want to show one negative result, because I think it matters for how you
+judge the rest of this. I had a theory: words a subject skips get a reading
+time of zero, so word length might be secretly acting as a proxy for
+whether a word gets fixated at all, not for how long. I tested this directly
+by filtering to only fixated words and retraining. Result: it made zero
+difference. It turns out at the word-averaged level, across 10 subjects,
+essentially no word has a reading time of exactly zero — minimum FFD across
+all 50,647 words is 5.1 milliseconds. So that theory is disproven, not just
+unconfirmed. I corrected my own documentation once I found this rather than
+leaving the wrong explanation in."
+CODE TO SHOW:
+  experiments/fixated_only_system1.py — the filter (look for the RT>0 mask
+  applied before training) and the printed comparison showing fixated-only
+  vs all-words R² are byte-identical.
+  COMMAND: python experiments/fixated_only_system1.py
+[~120 words, ~52 sec — this is the longest slide, budget for it]
+
+
+SLIDE 8: System 2 Reconfirmed
+------------------------------------------------------------------------------
+SAY:
+"Last piece of Phase 2: System 2, the readability classifier, still beats
+the paper on all four numbers — Base RT and Extended RT, both scoring
+methods. So even though FFD alone hasn't caught up to the paper, the
+downstream task that actually uses these predictions is solid. I'd
+consider System 2 effectively closed at this point — further effort there
+has diminishing returns."
+CODE TO SHOW: none needed — this reuses src/step5_system2.py unchanged from
+Phase 1, already covered in the earlier review. If asked, point to the
+System 2 table in phase1_replication/README.md instead of re-running the
+full 117K-pair pipeline live (it takes longer than the meeting allows).
+[~65 words, ~28 sec]
+
+
+SLIDE 9: What's Next — Extending to Tamil (section header)
+------------------------------------------------------------------------------
+SAY:
+"That's Phase 2. Now I want to propose Phase 3: taking this pipeline to
+Tamil."
+CODE TO SHOW: none — transition slide.
+[~18 words, ~8 sec]
+
+
+SLIDE 10: Why Tamil?
+------------------------------------------------------------------------------
+SAY:
+"Before proposing this I checked the literature so I wasn't duplicating
+existing work. There's no Tamil eye-tracking-while-reading corpus — even
+MultiplEYE, the main multilingual eye-tracking effort, doesn't cover Tamil
+yet. There's no Tamil readability or complexity dataset or classifier in
+DravidianLangTech, which is the main Tamil NLP workshop. The closest
+precedent I found is a 2023 machine-learning readability model for
+Gujarati — that tells me this kind of approach is publishable for an Indic
+language, it just hasn't been done for Tamil specifically. So this is a
+genuine gap, and I already have a working pipeline that's a natural fit for
+it."
+CODE TO SHOW: none — this is a literature-search finding, not a code result.
+Be upfront that this is what you checked, not an exhaustive systematic
+review, if he pushes on it.
+[~100 words, ~44 sec]
+
+
+SLIDE 11: The New Idea
+------------------------------------------------------------------------------
+SAY:
+"This isn't a straight port to a new language — there's a real new question
+here. From our own results, word length is already an unstable complexity
+proxy in English — that's the Table 1 versus Table 2 inconsistency I found
+in the original paper. Tamil is agglutinative: one word can carry what
+English spreads across a full clause, with case, tense, and agreement all
+stacked onto a single word. So word length is likely an even worse proxy
+there — morphemes, not characters, may be the right unit of complexity. The
+plan is to build a morphology-aware complexity metric using an open-source
+Tamil morphological analyzer called ThamizhiMorph, and use that to drive and
+evaluate an LLM-based Tamil sentence simplifier, validated against human
+judgments."
+CODE TO SHOW: none exists yet — say this explicitly ("this part is a
+proposal, no code yet"). If you want a visual aid instead of code, you can
+open experiments/check_wlen_r2_consistency.py briefly, since that script is
+literally the English-side finding this Tamil proposal is built on — it
+grounds the pivot in something you already proved, not just intuition.
+  COMMAND (optional, to reground the motivation before the new idea):
+  python experiments/check_wlen_r2_consistency.py
+[~118 words, ~51 sec]
+
+
+SLIDE 12: Why This Direction
+------------------------------------------------------------------------------
+SAY:
+"Why I think this is the right next step: it reuses the GPT-2 surprisal
+pipeline I already built, not starting from scratch. Every missing piece —
+a Tamil GPT-2 model, the ThamizhiMorph analyzer — already has a real,
+open-source option identified, so this is achievable, not speculative. And
+it produces two separate deliverables: a testable linguistic claim about
+whether word-length-based complexity metrics transfer to agglutinative
+languages, and a working simplification system as an application. It also
+answers a bigger question than just Tamil — the same issue applies to
+Turkish, Finnish, and Korean."
+CODE TO SHOW: none — closing/rationale slide.
+[~92 words, ~40 sec]
+
+
+CLOSING (no slide, use after slide 12)
+------------------------------------------------------------------------------
+SAY:
+"That's Phase 2 complete and Phase 3 proposed. I'm happy to run any of the
+scripts again, or go deeper into whichever part you want — the GPT-2
+context-window mechanics, the negative result, or the Tamil plan's
+feasibility."
+[~40 words, ~18 sec]
+
+==============================================================================
+TOTAL: ~1015 words script + live-run pauses, roughly 8-9 minutes talking,
+10-12 minutes with 2-3 live demos (slide 5 results table + slide 7 negative
+result are the two most worth running live; skip the rest if time is short).
+
+QUICK PRIORITY IF TIME IS TIGHT:
+  Must show live: Slide 5 (train_system1_gpt2.py results table)
+  Show if time allows: Slide 7 (fixated_only_system1.py negative result)
+  Skip live demo, describe only: Slides 3, 4, 6 (use the numbers already
+  in the script — the code is there to open only if he asks to see it)
+==============================================================================

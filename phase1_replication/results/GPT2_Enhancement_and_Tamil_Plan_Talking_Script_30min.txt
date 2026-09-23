@@ -1,0 +1,621 @@
+TALKING SCRIPT (30-MINUTE VERSION) — Progress Meeting with Professor
+Phase 2 (GPT-2 Enhancement) Results + Phase 3 (Tamil) Proposal
+Bhagyalaxmi Pandiyan  |  Deck: GPT2_Enhancement_and_Tamil_Plan.pptx
+==============================================================================
+HOW THIS VERSION DIFFERS FROM THE 10-MIN SCRIPT
+------------------------------------------------------------------------------
+The original script (GPT2_Enhancement_and_Tamil_Plan_Talking_Script.txt) was
+built to be tight: ~8-9 min talking, 10-12 min with 2 live demos, and it
+explicitly told you to SKIP live code walkthroughs on slides 3/4/6 unless
+asked. For a 30-minute slot, that's the wrong instinct to keep — you now have
+room to actually teach the pipeline, not just report results. This version:
+
+  1. Adds a full NEW section (Part A below) that walks through all 17
+     features one at a time using feature_demo.py, with real computed
+     values from your own output files. This is the single biggest way to
+     fill time usefully, because it's exactly the thing you said you
+     struggle to explain live: what each feature IS, where its number
+     comes from, and what it looks like in the actual CSV.
+  2. Un-compresses slides 3, 4, 6 from "describe only" back to full live
+     code walkthroughs, since you now have time.
+  3. Adds an ANTICIPATED Q&A appendix at the end — 12 likely questions with
+     answers already thought through, so if he interrupts (professors do)
+     you're not caught flat-footed, and if he doesn't, you can offer to
+     cover 2-3 of them yourself to use remaining time well.
+
+TOTAL BUDGET: ~30 min = Part A (10 min) + Part B (13 min) + Part C (5 min)
++ closing/buffer (2 min). Part B is the original script's content, just
+un-compressed. Section timings are deliberately generous — if you run long,
+cut from Part C (Tamil) first, since it's a proposal and can be summarized;
+never cut Part A, since that's the professor asking to see you understand
+your own pipeline.
+
+BEFORE YOU START — have these open in separate tabs/terminal:
+  - VS Code: phase1_replication/src/feature_demo.py
+  - VS Code: phase1_replication/experiments/compute_gpt2_surprisal.py
+  - VS Code: phase1_replication/experiments/train_system1_gpt2.py
+  - VS Code: phase1_replication/experiments/fixated_only_system1.py
+  - VS Code: phase1_replication/experiments/gpt2_sentence_correlation.py
+  - VS Code: phase1_replication/output/lexical_features.csv (keep this OPEN
+    and visible — every time you name a feature, point at its column here)
+  - VS Code: phase1_replication/output/syntactic_features.csv (same idea)
+  - Terminal, cwd = phase1_replication/
+  - phase1_replication/README.md (fallback if a live run fails or time's short)
+==============================================================================
+
+
+SLIDE 1: Title
+------------------------------------------------------------------------------
+SAY:
+"Good [morning/afternoon]. I want to use today's time a bit differently than
+last time — I'll start by walking through exactly how each of the 17
+features in my model is computed, with real numbers, since that's the part
+I want to make sure I can explain confidently. Then I'll cover what's new
+since we last spoke: the GPT-2 results, and a proposal for Phase 3 on
+Tamil. I'll show live code and live numbers throughout, not just slides."
+CODE TO SHOW: none.
+[~85 words, ~35 sec]
+
+
+==============================================================================
+PART A — FEATURE-BY-FEATURE WALKTHROUGH (NEW — the 30-min addition)
+==============================================================================
+SAY (intro to this part):
+"Before the new work, I want to ground everything in the actual pipeline.
+There are 17 features feeding System 1, split into 6 lexical features and
+11 syntactic/structural ones. Rather than describe them abstractly, I'll run
+the script that computes all of them from the raw data live, so you see the
+real numbers, not just formulas on a slide."
+CODE TO SHOW / RUN:
+  COMMAND: python src/feature_demo.py
+  This script prints six parts. Talk through each part as it scrolls,
+  using the notes below. Have output/lexical_features.csv and
+  output/syntactic_features.csv open so you can point at the matching
+  column and row for whatever number you just said out loud.
+[~55 words, ~24 sec]
+
+
+A1. Raw Dundee Corpus (what the data looks like)
+------------------------------------------------------------------------------
+SAY:
+"This is one subject's raw file — Subject A, reading all 20 newspaper
+texts. Each row is one word that subject actually fixated on. WORD is the
+word, TEXT is which of the 20 texts, WNUM is the word's position in that
+text, and FDUR is First Fixation Duration in milliseconds — how long their
+eye stayed on the very first look at that word. The key thing to notice:
+if a subject skipped a word — didn't look at it at all — that word simply
+doesn't have a row for that subject. That's going to matter in a minute
+when I talk about a bug I ruled out."
+[Point at the printed table: 8 rows of Text 1, Subject A]
+[~100 words, ~44 sec]
+
+
+A2. From raw fixations to 4 reading-time measures
+------------------------------------------------------------------------------
+SAY:
+"There are two raw datasets. Dataset 1P gives me FFD directly — one row per
+fixation, so for a word with a single fixation, FFD is just that duration.
+Dataset 2P records every individual fixation with a fixation number, which
+lets me compute three more measures: FPD, first-pass duration, is the sum
+of fixations before the eye ever regresses backward. RPD, regression-path
+duration, is the sum from the first fixation until the eye moves past the
+word to the right. TD, total duration, is every fixation on that word,
+including re-reads. Then, because I have 10 subjects, for every word
+position I sum all 10 subjects' values — a subject who skipped it
+contributes zero — and divide by 10. That average is what actually goes
+into the model, not any one person's individual reading time."
+[Point at: the per-subject FFD table for the first 3 words of Text 1, then
+the resulting dundee_rt.csv sample with ffd/fpd/rpd/td columns]
+[~140 words, ~60 sec]
+
+
+A3. The 6 lexical features, one at a time
+------------------------------------------------------------------------------
+SAY (feature 1 — wlen):
+"Feature 1, word length. This one's the simplest — it's just the character
+count of the word, taken directly from the Dundee corpus's own WLEN column.
+'Tourists' is 8 characters, so wlen equals 8. It sounds trivial, but it
+turns out to be one of the most predictive features in the whole model,
+which is actually part of what motivates the Tamil proposal later —
+character count is a good proxy for complexity in English, but I'll argue
+it may not transfer to other languages."
+[Point at wlen column in lexical_features.csv for the printed sample words]
+
+SAY (feature 2 — sent_len):
+"Feature 2, sentence length — the number of words in the sentence this word
+belongs to. It comes from the Dundee corpus's own sentence files, not
+something I compute myself, I just count words per line."
+[Point at the printed first/second sentence and their word counts]
+
+SAY (feature 3 — wiki_freq):
+"Feature 3, Wikipedia frequency. I use a Python library called wordfreq,
+which gives the probability of a word appearing in Wikipedia text. I
+convert that to frequency-per-million and take a log, so common words like
+'the' get a high score and rare words like 'enticed' get a low one — this
+is a standard log-frequency transform used throughout psycholinguistics,
+not something I invented."
+[Point at the printed P values and resulting wiki_freq for 'the', 'tourists',
+'enticed' — note the contrast between a common and a rare word]
+
+SAY (features 4 & 5 — aoa_mean, aoa_std):
+"Features 4 and 5, Age of Acquisition — the average age at which a word is
+typically learned, from published norms by Kuperman et al. 2012, a 30,000+
+word dataset. If a word isn't in that dictionary, I fall back to the corpus
+mean rather than leaving it blank, so no word has a missing value."
+[Point at aoa.csv row count and the aoa_mean/aoa_std columns in
+lexical_features.csv]
+
+SAY (features 6 & 7 — fwd_prob, bwd_prob):
+"Features 6 and 7, forward and backward transition probability. These use
+the British National Corpus, 100 million words, to ask: given the previous
+word, how likely is this word to come next — that's forward. And given the
+NEXT word, how likely was this word to have preceded it — that's backward.
+I use add-one smoothing so a word pair that never appeared in the BNC still
+gets a small non-zero probability instead of breaking the log."
+[Point at fwd_prob/bwd_prob columns for the first 5 words of Text 1]
+[Combined A3 total: ~280 words, ~2 min]
+
+
+A4. The 11 syntactic / structural features
+------------------------------------------------------------------------------
+SAY (features 8 & 9 — lex_surprisal, syn_surprisal):
+"Feature 8, lexical surprisal, is closely related to the BNC transition
+probability, but expressed as negative log probability — 'how surprised are
+you to see this word given the previous one.' Feature 9, syntactic
+surprisal, is the more involved one: it comes from a left-corner parser run
+over 39,832 parse trees from the Penn Treebank Wall Street Journal
+sections. I take each Dundee word's part-of-speech tag from a separate
+annotation file, then compute how surprising that POS tag is given the
+previous POS tag using bigram statistics from the treebank. For example,
+seeing a plural noun right after a present-tense verb is somewhat unusual,
+so that gets a higher surprisal score than a more expected tag sequence."
+[Point at the annotation file sample — word/pos/head/deprel columns — then
+the lex_surprisal/syn_surprisal columns in syntactic_features.csv]
+
+SAY (feature 10 — entropy_red):
+"Feature 10, entropy reduction. This measures how much a word narrows down
+what could come next. After the word 'United', there are really only a
+couple of likely continuations — 'States' or 'Nations' — so uncertainty
+drops sharply, and that's a high entropy reduction score. It's computed as
+the drop in entropy, the drop in average uncertainty over next-word
+probabilities, and clipped at zero so a word that INCREASES uncertainty
+doesn't get a negative score."
+[Point at entropy_red column for the sample words]
+
+SAY (features 11 & 12 — emb_depth, emb_diff):
+"Features 11 and 12 come from the dependency parse tree that's part of the
+Dundee corpus's own annotation. Embedding depth is how many hops a word is
+from the root of its sentence's tree — the root itself is depth zero, its
+direct dependents are depth one, and so on. Embedding difference is just
+the change in depth from the previous word to this one — did we go deeper
+into the structure or come back up."
+[Point at the printed word/POS/head/deprel/depth table — walk through 2-3
+words showing how depth is counted from the head chain]
+
+SAY (features 13-17 — h1 through h8):
+"The last group, features 13 through 17, are yes/no flags derived from
+those depth transitions between adjacent words — did the head change from
+the previous word, did depth increase, did it decrease, is this word the
+root, did depth jump by more than one level in either direction, or stay
+exactly the same. These capture the SHAPE of the syntactic structure around
+each word, not just its raw depth number."
+[Point at h1/h2/h3/h4/h6/h7/h8 columns for the sample words]
+[Combined A4 total: ~290 words, ~2 min]
+
+
+A5. From features to the System 1 number you already know
+------------------------------------------------------------------------------
+SAY:
+"Putting it together: all 17 features plus the 4 averaged reading-time
+measures get merged into one table, about 50,647 word rows. I split by
+SENTENCE, not by word, into 60/20/20 train/dev/test, so the same sentence
+never appears in both train and test — that would leak information. I
+scale the features, fit a Ridge regression, and tune one threshold on the
+dev set: predictions below that threshold get zeroed out, because very low
+predicted reading time usually means the model thinks the reader would
+skip that word entirely. That's the whole System 1 pipeline that produces
+the R² numbers you've already seen — FFD 0.445, FPD 0.559, RPD 0.556, TD
+0.536, against the paper's 0.649 / 0.600 / 0.570 / 0.516."
+CODE TO SHOW (if time / if asked): the STEP 1/2/3 print blocks in
+feature_demo.py, which literally print the scaler → Ridge → threshold code
+as it explains it, not just prose.
+[~135 words, ~58 sec]
+
+PART A TOTAL: ~700 words script + demo scroll/pause time ≈ 8-10 minutes
+including you pointing at CSV columns as each feature prints.
+
+
+==============================================================================
+PART B — PHASE 2: GPT-2 ENHANCEMENT (expanded from the 10-min version)
+==============================================================================
+
+SLIDE 2: Recap — What We Replicated
+------------------------------------------------------------------------------
+SAY:
+"So that's the full System 1 pipeline. System 2 sits on top of it: it takes
+System 1's predicted reading times for every word in a sentence, and uses
+them to classify which of two parallel sentences — a Wikipedia sentence and
+its Simple Wikipedia counterpart — is harder to read. Both systems are
+replicated in full on the Dundee corpus: 50,647 words, 2,378 sentences,
+10 subjects. Everything I just walked through in Part A is System 1's
+input side."
+[~70 words, ~30 sec]
+
+
+SLIDE 3: Why We Turned to GPT-2
+------------------------------------------------------------------------------
+SAY:
+"Now, the new work. Going back to feature 9, syntactic surprisal — the
+left-corner parser feature — I found it carries almost no signal for FFD:
+r equals minus 0.017. I cross-checked this against the paper's own Table 1,
+where they report minus 0.067 for the same feature on their own data. Same
+sign, same order of magnitude, so this isn't a bug in my pipeline, it's a
+real, reproducible property of that feature. That raised an obvious
+question: a hand-built 1990s-style parser isn't the only way to estimate
+how predictable a word is — could a modern language model's surprisal do
+better?"
+CODE TO SHOW — full walkthrough now that there's time:
+  experiments/train_system1_gpt2.py, lines 76-80, the "Sanity: correlation"
+  block. Open the file, scroll to it, and explain: this prints
+  syn_surprisal's r and gpt2_surprisal's r in the SAME run, on the SAME
+  data, right before training starts — that's deliberate, so the comparison
+  can't be an artifact of running two separate scripts on different data.
+  COMMAND (live, few seconds since data is cached):
+  python experiments/train_system1_gpt2.py
+[~130 words + live run, ~1 min talk + ~15 sec run]
+
+
+SLIDE 4: Method
+------------------------------------------------------------------------------
+SAY:
+"The method: for every word, compute GPT-2 surprisal — how unpredictable
+that word is given everything that came before it, including up to 3
+preceding sentences of context so the model isn't guessing cold at the
+start of every sentence. Then swap that in for syn_surprisal in the same
+19-feature model, same 60/20/20 sentence split, same Ridge regression —
+nothing else in the pipeline changes. I tested this across all four
+reading-time measures, not just FFD, since the paper's own feature also
+gets evaluated against all four."
+CODE TO SHOW — full walkthrough:
+  experiments/compute_gpt2_surprisal.py, function word_token_surprisals()
+  (lines 66-118):
+    - lines 74-75: the sentence gets split into words, and prior-sentence
+      context gets prepended before it's fed to the model
+    - lines 84-91: this is the actual GPT-2 forward pass — for each
+      subword token, take negative log probability of that token given
+      every token before it. That's the literal definition of surprisal.
+    - lines 93-116: subword surprisals get summed back up into one
+      whole-word surprisal, using the END position of each token rather
+      than the start. Explain why: GPT-2's tokenizer (BPE) merges a
+      leading space into the NEXT word's first token, so if you attribute
+      by start position you mis-assign the sentence-initial word after a
+      context boundary. This was a real bug I found and fixed, not a
+      hypothetical — worth saying plainly since it shows you're checking
+      your own pipeline for correctness, not just trusting output.
+  Then: experiments/train_system1_gpt2.py, add_gpt2_feature() (lines 27-31)
+  and the three-way variants dict (lines 59-63) — baseline / add / swap —
+  to show exactly how the three-way comparison is wired up in code, not
+  just described in a slide.
+[~185 words, ~80 sec]
+
+
+SLIDE 5: Results (Table 3)
+------------------------------------------------------------------------------
+SAY:
+"Here are the numbers, run live so they're directly reproducible in front
+of you. RPD and TD now beat the paper outright. FPD is within 0.017 of the
+paper. FFD is the one measure that still trails, but it improved too — from
+0.444 baseline to 0.458 with GPT-2 swapped in. There's a real pattern here,
+not just noise: FFD is a single brief first glance at a word, while the
+other three measures integrate more of the reading process — later
+fixations, regressions, total time — so there's simply more room for a
+richer predictability signal like GPT-2's to matter. A first glance is
+dominated more by low-level things like word length and frequency than by
+deep predictability."
+CODE TO SHOW — live demo, the centerpiece:
+  COMMAND: python experiments/train_system1_gpt2.py --surprisal-file output/gpt2_surprisal_gpt2_ctx.csv
+  Prints Measure | baseline | gpt2_added | gpt2_swap for all 4 measures.
+  Point at each row as you say its number.
+[~130 words + live run, ~55 sec talk + ~15-20 sec run]
+
+
+SLIDE 6: Feature Quality Checks
+------------------------------------------------------------------------------
+SAY:
+"Before trusting a new feature, I ran three checks. First, is it just a
+duplicate of syn_surprisal in disguise? Correlation is 0.014 — essentially
+zero, so it's genuinely new signal, not the old feature relabeled. Second,
+it does correlate moderately with lexical surprisal, frequency, and AoA,
+which is expected and actually reassuring — they're all
+predictability-flavored features, so some shared variance makes sense; if
+it correlated at 0.99 with something else I'd be suspicious. Third, and
+this is the trap I want to walk through carefully: if you sum GPT-2
+surprisal over an entire sentence instead of averaging it, that sum
+correlates 0.914 with sentence length. That's not a predictability signal
+at all — it's just counting words with extra steps, because summing N
+numbers that are each roughly the same size scales with N. I used the mean
+per sentence instead, which stays a clean, length-independent
+predictability measure."
+CODE TO SHOW — full walkthrough:
+  experiments/gpt2_sentence_correlation.py — run it live, point at the full
+  correlation matrix (gpt2_surprisal vs syn_surprisal / lex_surprisal /
+  wiki_freq / aoa_mean / wlen), then specifically the gpt2_sum vs sent_len
+  row showing r=0.914, and the gpt2_mean row right next to it showing the
+  contrast.
+  COMMAND: python experiments/gpt2_sentence_correlation.py
+[~175 words + live run, ~75 sec talk + ~10 sec run]
+
+
+SLIDE 7: Ruling Out a Wrong Explanation
+------------------------------------------------------------------------------
+SAY:
+"I want to walk through one negative result in full, because I think how
+you handle a wrong hypothesis matters as much as a positive result. My
+theory was: a word a subject skips entirely gets a reading time of zero in
+the averaged data, so maybe word length is secretly acting as a proxy for
+WHETHER a word gets looked at at all, not for HOW LONG it's looked at —
+since longer words are fixated more reliably. If that were true, it would
+partly undermine how I'm interpreting word length as a complexity signal.
+I tested this directly: filter down to only words that were actually
+fixated by at least one subject, retrain System 1 on that subset, and
+compare. Result: it made zero difference — the R² values were
+byte-identical to the full dataset. Digging into why, I found that at the
+word-averaged level, across 10 subjects, essentially no word ends up with
+an averaged reading time of exactly zero — the minimum FFD across all
+50,647 words is 5.1 milliseconds, not zero. So the theory isn't just
+unconfirmed, it's actively disproven by the data. I'd rather show you that
+I corrected my own working explanation once I found this, rather than
+present a cleaner story that turned out to be wrong."
+CODE TO SHOW:
+  experiments/fixated_only_system1.py — point at the RT>0 mask applied
+  before training, and the printed comparison line showing fixated-only
+  vs all-words R² are identical.
+  COMMAND: python experiments/fixated_only_system1.py
+[~230 words + live run, ~100 sec talk + ~10 sec run]
+
+
+SLIDE 8: System 2 Reconfirmed
+------------------------------------------------------------------------------
+SAY:
+"Last piece of Phase 2. System 2 — the readability classifier built on top
+of System 1's predictions — still beats the paper on all four reported
+numbers: Base RT and Extended RT, under both of the paper's two scoring
+methods. So even though FFD alone hasn't caught up to the paper's number,
+the downstream task that actually consumes these predictions is solid, and
+the gap you'd expect from FFD lagging shows up as only about a 1.4 to 2.6
+point accuracy gap, not something larger. I'd consider System 2 effectively
+closed at this point — further tuning there has diminishing returns
+compared to where GPT-2 and the Tamil work can add value."
+CODE TO SHOW: point to the System 2 table in phase1_replication/README.md
+rather than re-running the full 117K-pair pipeline live — it takes longer
+than the meeting allows. If he wants to see the mechanism, not just the
+number, you can briefly show the "HOW FEATURES ARE BUILT" and "CLASSIFIER"
+print blocks in feature_demo.py Part 6, which show the 60-word padding,
+120-dim concatenation, and LogisticRegression + 10-fold CV code without
+re-running the full pipeline.
+[~140 words, ~1 min]
+
+PART B TOTAL: ~1055 words talk + ~50-60 sec of live-run time ≈ 13-14 min
+
+
+==============================================================================
+PART C — PHASE 3 PROPOSAL: EXTENDING TO TAMIL
+==============================================================================
+
+SLIDE 9: What's Next — Extending to Tamil (section header)
+------------------------------------------------------------------------------
+SAY:
+"That's Phase 2 complete. Now I want to propose Phase 3: taking this same
+pipeline to Tamil, and I want to be upfront that this section is a
+proposal — there's no code or results here yet, just a plan I'd like your
+feedback on."
+CODE TO SHOW: none — transition slide.
+[~55 words, ~24 sec]
+
+
+SLIDE 10: Why Tamil?
+------------------------------------------------------------------------------
+SAY:
+"Before proposing this I checked the literature so I wasn't duplicating
+existing work. There's no Tamil eye-tracking-while-reading corpus that I
+could find — even MultiplEYE, the main multilingual eye-tracking
+initiative, doesn't cover Tamil yet. There's also no Tamil readability or
+sentence-complexity dataset or classifier in DravidianLangTech, which is
+the main Tamil NLP workshop series. The closest precedent I found is a 2023
+machine-learning readability model for Gujarati, which tells me this kind
+of approach IS considered publishable for an Indic language — it just
+hasn't been done for Tamil specifically yet. So this looks like a genuine
+gap, and I already have a working pipeline that's a natural fit for
+attacking it. I want to flag honestly that this was my own targeted
+literature check, not a systematic review, in case you know of work I
+missed."
+CODE TO SHOW: none — literature-search finding, not a code result.
+[~140 words, ~60 sec]
+
+
+SLIDE 11: The New Idea
+------------------------------------------------------------------------------
+SAY:
+"This isn't meant to be a straight port of the English pipeline to a new
+language — there's a genuine new research question underneath it. From my
+own results, word length is already an unstable complexity proxy even in
+English — that's the same Table 1 versus Table 2 inconsistency in the
+original paper that I flagged earlier in this project. Tamil is
+agglutinative: a single word can carry what English spreads across an
+entire clause, with case, tense, and agreement all stacked onto one word
+through suffixes. So character-count word length is likely an even WORSE
+proxy for complexity there — morphemes, the smallest meaningful units
+inside a word, may be the more linguistically correct thing to count
+instead of raw characters. Concretely, the plan is: use an open-source
+Tamil morphological analyzer, ThamizhiMorph, to decompose each word into
+its morphemes and build a morpheme-count-based complexity metric; then use
+that metric to drive and evaluate an LLM-based Tamil sentence simplifier,
+with the simplified output validated against human readability judgments,
+the same basic evaluation logic as System 2, just with morphology
+replacing word length as the core complexity signal."
+CODE TO SHOW: none exists yet for the Tamil side — say this plainly. As a
+grounding visual instead of new code, briefly open
+experiments/check_wlen_r2_consistency.py, since that script is literally
+the English-side finding this whole proposal is built on — it shows the
+pivot is grounded in something you already proved on your own data, not
+just intuition about Tamil.
+  COMMAND (optional): python experiments/check_wlen_r2_consistency.py
+[~205 words, ~90 sec]
+
+
+SLIDE 12: Why This Direction
+------------------------------------------------------------------------------
+SAY:
+"A few reasons I think this is the right next step rather than a
+distraction from finishing Phase 2. First, it reuses infrastructure I
+already built — the GPT-2 surprisal pipeline generalizes directly, since
+Tamil GPT-2 models already exist openly, I'm not starting from zero on the
+modeling side. Second, every missing piece has a real, identified,
+open-source option already — a Tamil GPT-2 model and the ThamizhiMorph
+analyzer — so this is achievable on a realistic timeline, not speculative.
+Third, it produces two separate, gradeable deliverables: a testable
+linguistic claim — does a word-length-based complexity metric transfer to
+an agglutinative language, or does morphology have to replace it — and
+separately, a working Tamil simplification system as the applied output.
+And I'd add: this isn't only a Tamil-specific question. The same
+word-length-versus-morpheme issue applies to any agglutinative language —
+Turkish, Finnish, Korean — so a positive or negative result here says
+something more general about whether English-derived readability features
+transfer at all."
+CODE TO SHOW: none — closing/rationale slide.
+[~160 words, ~70 sec]
+
+PART C TOTAL: ~560 words ≈ 5 min
+
+
+CLOSING (no slide, use after slide 12)
+------------------------------------------------------------------------------
+SAY:
+"That's Phase 2 complete, fully explained down to the feature level, and
+Phase 3 proposed with a concrete first step. I'm happy to re-run any of the
+scripts again, go deeper into any one feature, the GPT-2 context-window
+mechanics, the negative result, or the Tamil plan's feasibility — whatever
+would be most useful to spend the remaining time on."
+[~55 words, ~24 sec]
+
+==============================================================================
+GRAND TOTAL: Part A ~700w + Part B ~1055w + Part C ~560w + title/closing
+~140w ≈ 2455 words of scripted talk, roughly 17-18 minutes at a measured
+presenting pace, PLUS live demo run time (feature_demo.py scroll-through +
+pointing at CSVs ~3-4 min, plus 4 short script runs ~1 min total) PLUS
+natural pauses for him to look at code/CSVs and ask something mid-slide
+(budget 6-8 min for this, professors interrupt) ≈ 28-32 minutes total.
+
+IF YOU'RE RUNNING SHORT ON TIME: cut from Part C first (compress slides
+10-12 into one shorter "here's the plan" slide) — it's a proposal, it's
+fine to summarize and let discussion fill in detail. NEVER cut Part A short
+by rushing through features — that's the part that's actually being
+evaluated for whether you understand your own pipeline.
+
+IF YOU'RE RUNNING LONG: skip re-running gpt2_sentence_correlation.py live
+(Slide 6) and just describe the two numbers (0.014 duplicate-check, 0.914
+sum-trap) — the code walkthrough for Slide 4 and the live run for Slide 5
+matter more than this one.
+==============================================================================
+
+
+==============================================================================
+APPENDIX — ANTICIPATED Q&A (12 questions, prepared answers)
+==============================================================================
+Use this if he interrupts with a question mid-talk, or offer 2-3 of these
+proactively near the end if there's leftover time ("a few things I expect
+you might ask — want me to cover any of these?").
+
+Q1: "Why Ridge regression and not something more powerful, like a neural
+    network or gradient boosting?"
+A: "To stay comparable to the original paper, which uses Ridge — swapping
+    the model family would confound whether a difference in results comes
+    from the new feature or from a stronger model. It's also more
+    interpretable and appropriate for 17-19 features on ~50K rows, where a
+    deep model would likely overfit without adding real signal."
+
+Q2: "Could the GPT-2 improvement just be because GPT-2 was trained on data
+    that includes Wikipedia or news text similar to Dundee?"
+A: "Possible in principle, but the Dundee corpus is British newspaper text
+    from the 1990s, and GPT-2's surprisal is being computed word-by-word
+    from context within the SAME sentence/document, not retrieving memorized
+    text — it's measuring local predictability, not recognition. I haven't
+    directly tested for memorization contamination, but the sentence-level
+    train/dev/test split at least prevents the SPLIT itself from leaking."
+
+Q3: "Why did you only test up to 3 sentences of prior context for GPT-2,
+    not the whole document?"
+A: "It's a tradeoff between more context (better predictions) and compute
+    time per word — 3 sentences was a practical choice, not something I
+    swept exhaustively. That's an easy follow-up experiment if you'd like
+    to see the sensitivity curve."
+
+Q4: "Have you tried combining syntactic surprisal AND GPT-2 surprisal,
+    instead of swapping one for the other?"
+A: "That's the 'gpt2_added' variant in the three-way comparison
+    (baseline/add/swap) — yes, I did test adding it alongside syn_surprisal
+    rather than replacing it. [Have the actual add-variant numbers ready
+    from the Slide 5 live run output before the meeting.]"
+
+Q5: "How do you know the threshold-tuning step (zeroing low predictions)
+    isn't just overfitting to the dev set?"
+A: "The threshold is selected ONLY on the dev set, then applied unchanged
+    to the held-out test set — the reported R² is always on test data the
+    threshold was never tuned against."
+
+Q6: "For the Tamil proposal, how would you even get ground-truth
+    readability labels without an eye-tracking corpus?"
+A: "Two options I'm considering: human readability ratings collected
+    directly (Likert-scale judgments on sentence pairs, similar to how the
+    Wikipedia/Simple-Wikipedia System 2 labels work), or a Tamil
+    parallel-text resource if one exists for standard vs. simplified
+    writing. This is one of the open design questions I'd want your input
+    on before committing to a data-collection plan."
+
+Q7: "Isn't 'morphemes instead of characters' just swapping one proxy for
+    another — how do you know morpheme count is actually better?"
+A: "Fair — it's a hypothesis, not a proven result yet. The plan is to test
+    it the same way I tested word length here: check whether a
+    morpheme-count feature correlates with human readability judgments
+    more consistently than character-count word length does on Tamil data,
+    the same kind of consistency check I ran for word length in English."
+
+Q8: "What's the biggest technical risk in the Tamil plan?"
+A: "Honestly, ThamizhiMorph's coverage and accuracy on real-world text —
+    if the morphological analyzer itself is unreliable on informal or
+    domain-varied Tamil, the complexity metric built on top of it inherits
+    that noise. I'd want to validate the analyzer's output on a sample
+    before building the full pipeline on it."
+
+Q9: "Why not test this idea on a language with MORE existing resources
+    first, to reduce risk?"
+A: "That's a reasonable alternative — Turkish or Finnish have more NLP
+    tooling. I chose Tamil specifically because of the genuine literature
+    gap (Slide 10) and because it's a language I can validate simplified
+    output in myself, which matters for the human-judgment evaluation
+    step."
+
+Q10: "How long do you expect Phase 3 to take?"
+A: "[Fill in your actual estimate before the meeting — don't leave this
+    unanswered live. Break it into: morphological analyzer integration +
+    validation, complexity metric design, LLM simplifier setup, human
+    evaluation collection.]"
+
+Q11: "Since System 2 is 'effectively closed' in your words, are you sure
+    there's nothing more to learn from FFD still lagging the paper?"
+A: "There's likely more headroom, but I think it's diminishing returns
+    relative to time cost — the paper's remaining FFD advantage may come
+    from features I haven't tried (e.g. their exact parser implementation
+    rather than my POS-bigram approximation), but chasing that further
+    trades off against time I could spend on the Tamil work, which is new
+    territory rather than incremental tuning."
+
+Q12: "What would make you abandon the Tamil direction if it doesn't pan
+    out?"
+A: "If ThamizhiMorph's output turns out too unreliable to build a metric
+    on, or if I can't collect enough human readability judgments to
+    validate against, I'd treat that as a signal to scope down to a
+    smaller, purely descriptive study (e.g., just characterizing how word
+    length vs. morpheme count behave differently on Tamil text) rather than
+    pushing through to a full simplifier system."
+==============================================================================

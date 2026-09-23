@@ -1,9 +1,9 @@
 # BNC is too large for GitHub (4.4 GB folder + 538 MB zip); store on Google Drive
-Dataset/BNC/
-Dataset/BNC.zip
+phase1_replication/Dataset/BNC/
+phase1_replication/Dataset/BNC.zip
 
 # Generated output files (large; re-created by running the pipeline)
-output/
+phase1_replication/output/
 
 # Python cache
 __pycache__/
