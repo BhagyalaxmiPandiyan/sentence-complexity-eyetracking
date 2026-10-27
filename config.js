@@ -3,7 +3,7 @@ const CONFIG = {
   // Google Apps Script web-app URL (HOW_TO_SHARE.md, step 2).
   // Empty = test mode: nothing is uploaded; the data is downloaded as a
   // file at the end instead.
-  ENDPOINT: "",
+  ENDPOINT: "https://script.google.com/macros/s/AKfycby8PALvO_nNIW909O-7ZLPjVP4dNKr1uovd67Ne0KMQpBGjsHA2flCjg6U8TVGyz-gDIw/exec",
 
   // Display
   FONT_PX: 30,          // largest font tried; shrinks if a sentence does not fit
