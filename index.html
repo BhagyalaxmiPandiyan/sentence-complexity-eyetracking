@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ta">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>தமிழ் வாசிப்பு ஆய்வு</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f6f2; --card: #ffffff; --ink: #1d1d1f; --muted: #5f6368;
+    --accent: #0b6e4f; --accent-ink: #ffffff; --line: #dedbd2; --warn: #b3261e;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body { font-family: "Noto Sans Tamil", system-ui, sans-serif; line-height: 1.7; }
+  main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 64px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 28px 32px; }
+  h1 { font-size: 1.6rem; margin: 0 0 8px; }
+  h2 { font-size: 1.25rem; margin: 0 0 12px; }
+  .en { color: var(--muted); font-size: 0.92rem; font-family: system-ui, sans-serif; }
+  label { display: block; margin: 14px 0 4px; font-weight: 600; }
+  input[type=text], input[type=number], select {
+    font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; width: 100%; max-width: 360px;
+  }
+  .check { display: flex; gap: 10px; align-items: flex-start; margin-top: 18px; font-weight: 400; }
+  .check input { margin-top: 7px; }
+  button.btn {
+    font: inherit; font-weight: 600; background: var(--accent); color: var(--accent-ink);
+    border: 0; border-radius: 8px; padding: 10px 22px; margin-top: 22px; cursor: pointer;
+  }
+  button.btn.secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  button.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .error { color: var(--warn); margin-top: 10px; }
+  ol li { margin-bottom: 8px; }
+  kbd { border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 6px; font-family: system-ui; }
+  .banner { background: #fdecea; color: var(--warn); border: 1px solid #f4c7c3; border-radius: 8px;
+            padding: 10px 14px; margin: 0 0 16px; font-weight: 600; }
+  table.keys { border-collapse: collapse; width: 100%; margin: 4px 0 8px; }
+  table.keys td { border-top: 1px solid var(--line); padding: 10px 8px; vertical-align: top; }
+  table.keys td:first-child { width: 36px; font-size: 1.3rem; color: var(--accent); text-align: center; }
+  ul li { margin-bottom: 8px; }
+  .probe-word { font-size: 2.2rem; font-weight: 600; text-align: center; margin: 28px 0; }
+  .row { display: flex; gap: 16px; justify-content: center; }
+  .row .btn { min-width: 160px; }
+
+  /* ---- full-window screens: calibration, validation, reading ---- */
+  .overlay { position: fixed; inset: 0; background: #ffffff; cursor: default; user-select: none; -webkit-user-select: none; }
+  .corner { position: absolute; top: 12px; left: 0; right: 0; text-align: center; color: var(--muted);
+            font-size: 0.95rem; margin: 0; }
+  .caldot { position: absolute; width: 28px; height: 28px; border-radius: 50%; border: 3px solid #ffffff;
+            background: #d93025; box-shadow: 0 0 0 2px #d93025; color: #ffffff; font: 600 12px system-ui;
+            padding: 0; cursor: pointer; }
+  .valdot, .fixdot { position: absolute; border-radius: 50%; background: #f2a900; }
+  .valdot { width: 24px; height: 24px; box-shadow: 0 0 0 6px rgba(242, 169, 0, .25); }
+  .fixdot { width: 20px; height: 20px; }
+  .text { position: absolute; color: #111111; }
+  .text .w { display: inline-block; white-space: nowrap; line-height: normal; vertical-align: middle; }
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script src="https://cdn.jsdelivr.net/npm/webgazer@3.5.3/dist/webgazer.js"></script>
+<script src="config.js"></script>
+<script src="stimuli.js"></script>
+<script src="measures.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
