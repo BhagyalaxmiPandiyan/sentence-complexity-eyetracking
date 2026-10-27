@@ -135,6 +135,9 @@ async function startGaze() {
     return;
   }
   webgazer.params.showVideoPreview = true;
+  // Face-mesh model files: WebGazer looks for ./mediapipe/face_mesh next to
+  // the page by default; load them from the CDN instead (version WebGazer 3.5.3 needs)
+  webgazer.params.faceMeshSolutionPath = "https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619";
   webgazer.setRegression("ridge")
     .saveDataAcrossSessions(false)
     .applyKalmanFilter(true)
@@ -347,9 +350,11 @@ async function screenCamera() {
     try {
       await startGaze();
     } catch (e) {
-      document.getElementById("err").textContent =
-        "கேமராவைத் திறக்க முடியவில்லை. அனுமதி கொடுத்து பக்கத்தை மீண்டும் ஏற்றவும். / The camera could not be opened. Allow camera access and reload the page.";
-      document.getElementById("cam").disabled = false;
+      // WebGazer cannot be started twice in one page, so the fix is a reload
+      document.getElementById("err").innerHTML =
+        `கேமராவைத் தொடங்க முடியவில்லை. கேமராவை அனுமதித்து, பக்கத்தை மீண்டும் ஏற்றவும் (F5).
+         <span class="en">The eye tracker could not start. Allow camera access and reload the page (F5).
+         If it happens again, send this to the researcher: ${esc(String(e && (e.message || e)).slice(0, 200))}</span>`;
       return;
     }
     showCamera(true);
