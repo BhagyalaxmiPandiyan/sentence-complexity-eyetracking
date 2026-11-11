@@ -1,0 +1,14 @@
+class 3: 1LK0e6FLB3KdaVCnMwhiMYKhCqa5O6YBs 136 pages, names class 3: True
+class 4: 11Vn_7f2VK0nRFOfuVqJERf-70IOfckZ9 152 pages, names class 4: True
+class 5: 10P94MT91L4wy3xAOLiZiHFKjnw5pX7Fg 160 pages, names class 5: True
+class 6: already downloaded
+class 7: 1QgQ9RMNoNMXfhUxJ7oFPe-28MyBUQ0oX 168 pages, names class 7: True
+class 8: 1GNQVi6tCf4AR8FVBIQdol6B4e_ALtMGH 232 pages, names class 8: True
+class 9: 1KbiKhIqZXpkUPz_kfP8LxrhmMkVtyhVD 272 pages, names class 9: True
+class 10: 1jYqCbgtRIWgULnm4lleRsTo9eb7Xn_8D 184 pages, names class 10: True
+class 11: 1OYhlp64q1Mx5NkQjdbvTWpLQ8CXonh6B 176 pages, names class 11: False
+class 11: 1jvIf0MWnSIvWyi2LGfsx0V_cW7xJ0e0Y 248 pages, names class 11: False
+class 11: NO MATCHING PDF FOUND
+class 12: 1syhbydqEPDllh66-RvSuvbqAfJmCQncx 176 pages, names class 12: False
+class 12: 1u1GnfbHXvW8xdQs49y9q2knrW10m1i4X 240 pages, names class 12: False
+class 12: NO MATCHING PDF FOUND

@@ -1,0 +1,10 @@
+transformers>=4.40
+torch>=2.1
+sentencepiece>=0.1.99
+pandas>=2.0
+numpy>=1.24
+scipy>=1.11
+morfessor>=2.0
+# ThamizhiMorph is NOT on pip: FST models are in tools/thamizhi-morph (git clone),
+# run via foma's flookup inside WSL - see experiments/setup_foma_wsl.sh
+datasets>=2.18

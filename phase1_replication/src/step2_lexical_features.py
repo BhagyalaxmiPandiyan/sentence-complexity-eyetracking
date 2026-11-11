@@ -1,4 +1,4 @@
-    """
+"""
 Step 2: Extract lexical features for each word in the Dundee corpus.
 
 Features (paper Section 3.2):
@@ -190,7 +190,7 @@ def compute_transition_probs(word_list, fwd_counts, bwd_counts, unigrams):
             prev = str(raw_p).lower().strip(".,!?;:'\"()") if isinstance(raw_p, str) else ""
             fwd_count = fwd_counts.get(prev, {}).get(w, 0)
             prev_total = unigrams.get(prev, 0)
-                      
+            fwd_p = (fwd_count + 1) / (prev_total + len(unigrams))
         else:
             fwd_p = 1.0 / max(len(unigrams), 1)
 

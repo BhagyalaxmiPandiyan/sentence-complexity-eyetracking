@@ -31,3 +31,32 @@ calc-fabp-model/
 parser-x-efabp/
 *.model
 *.linetrees
+
+# Archived material (old backup, side projects, duplicate downloads)
+_archive/
+
+# Virtual environments, caches, build artifacts
+.venv/
+.gradio/
+Tool/TamilReadingStudy.zip
+
+# Dropped side project (kept locally only)
+paper_acl_tamil/
+
+# Licensed data (LDC Penn Treebank) - must not be redistributed
+phase1_replication/Dataset/penn_treebank_3.zip
+
+# Participant / rater personal data (names, age, gender) - repo is public
+phase3_tamil_extension/Tamil Reading Study data.xlsx
+phase3_tamil_extension/Dataset/human_study/responses/
+phase3_tamil_extension/output/human_ratings_long.csv
+
+# Tamil Nadu textbook sentences (government copyright) - reproduce locally with step0-2
+phase3_tamil_extension/output/graded_sentences.csv
+phase3_tamil_extension/output/graded_pairs.csv
+phase3_tamil_extension/output/sentence_features.csv
+phase3_tamil_extension/output/simplification_scores.csv
+phase3_tamil_extension/Dataset/complex_sentences/original.csv
+phase3_tamil_extension/Dataset/complex_sentences/prompt_batch*.txt
+phase3_tamil_extension/Dataset/complex_sentences/simplified_*.txt
+phase3_tamil_extension/Dataset/human_study/items_key.csv

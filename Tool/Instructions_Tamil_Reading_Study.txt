@@ -1,0 +1,142 @@
+﻿=====================================================================
+  TAMIL READING STUDY - INSTRUCTIONS FOR PARTICIPANTS
+=====================================================================
+
+Thank you for helping with this study. You will read short Tamil
+sentences on your computer while the webcam estimates where you are
+looking. It takes about 40 minutes the first time (installation
+included) and about 25 minutes after that.
+
+---------------------------------------------------------------------
+YOUR DETAILS (filled in by the researcher)
+---------------------------------------------------------------------
+
+  Participant code : ________   (example: P07)
+  List number      : ________   (0 or 1)
+  Send results to  : vijay4.aiml.rymec@gmail.com
+
+Please read and sign the consent form from the researcher before you
+start.
+
+---------------------------------------------------------------------
+WHAT IS RECORDED
+---------------------------------------------------------------------
+
+  - Your key presses and answers
+  - Numbers describing where your eyes point on the screen
+  - NO photos, NO video, NO audio are saved
+  - Your name is not recorded; only your participant code
+
+---------------------------------------------------------------------
+WHAT YOU NEED
+---------------------------------------------------------------------
+
+  - A Windows 10 or Windows 11 computer or laptop with a webcam
+  - Internet connection (only for installation)
+  - A quiet room, light on your face (no bright window behind you)
+  - About 40 minutes without interruptions
+
+---------------------------------------------------------------------
+PART 1 - INSTALL (only once)
+---------------------------------------------------------------------
+
+1. Save TamilReadingStudy.zip to your Desktop.
+
+2. Right-click the zip file > "Extract All..." > "Extract".
+   A folder named TamilReadingStudy opens.
+
+3. Inside the folder, double-click  setup.bat
+   - If Windows shows "Windows protected your PC":
+     click "More info", then "Run anyway".
+   - A black window opens and installs the software (about 5 minutes).
+
+4. If the black window says "Python 3.12 was not found":
+   a. Open https://www.python.org/downloads/release/python-31210/
+   b. Scroll down, click "Windows installer (64-bit)" and run it.
+   c. IMPORTANT: on the first screen tick
+      "Add python.exe to PATH", then click "Install Now".
+   d. When it finishes, double-click setup.bat again.
+
+5. At the end, setup checks your computer. When it says
+   "Sit in front of the webcam for 4 seconds", look at the screen.
+   You should see:   All checks passed. You can run run_session.bat.
+
+   If it shows a PROBLEM line, see "IF SOMETHING GOES WRONG" below.
+
+---------------------------------------------------------------------
+PART 2 - DO THE READING SESSION
+---------------------------------------------------------------------
+
+Before you start:
+  - Close Zoom, Teams, Google Meet, Camera, or anything using the webcam.
+  - Plug in your laptop charger.
+  - Sit about an arm's length from the screen.
+  - Put your elbows on the table and rest your chin on your hands.
+    Keep your head in this position for the whole session.
+
+1. In the TamilReadingStudy folder, double-click  run_session.bat
+
+2. Type your participant code and press Enter.
+   Type your list number and press Enter.
+
+3. CALIBRATION (about 3 minutes)
+   - A yellow dot appears. Look at it and press SPACE.
+   - Keep looking at the dot until it jumps to a new place.
+   - Move only your EYES, not your head. There are 25 dots.
+   - At the end a red dot follows your gaze. Press Q to continue.
+
+4. READING (about 20 minutes)
+   - First, 9 dots appear one by one: just look at each dot.
+     A results screen follows: press C to continue.
+   - Before each sentence a small dot appears on the left:
+     look at it and press SPACE.
+   - The whole sentence appears at once (long sentences take 2 to 4
+     lines). Read it normally, the way you usually read. When you
+     have finished, press SPACE.
+   - There are 100 sentences in 4 parts.
+   - After some sentences a word is shown with the question
+     "was this word in the sentence?":
+     press Y for yes (ஆம்), N for no (இல்லை).
+   - After each part there is a short break and a few more dots.
+
+5. When it says "Finished. Thank you!", the window closes and a
+   folder opens with your results file, named like:
+        P07_results_20261101_103000.zip
+
+---------------------------------------------------------------------
+PART 3 - SEND YOUR RESULTS BACK
+---------------------------------------------------------------------
+
+1. Find the results file. It is in:
+        TamilReadingStudy\results\
+   (the folder opens automatically at the end of the session)
+
+2. Email that ONE file as an attachment to:
+        vijay4.aiml.rymec@gmail.com
+   Subject:  Tamil reading study - <your participant code>
+
+   (WhatsApp or Google Drive is also fine if the researcher agrees.)
+
+3. That's all. You may delete the TamilReadingStudy folder afterwards.
+
+---------------------------------------------------------------------
+IF SOMETHING GOES WRONG
+---------------------------------------------------------------------
+
+  Problem                              What to do
+  -----------------------------------  ------------------------------
+  "Webcam could not be opened"         Close Zoom/Teams/Camera apps,
+                                       then try again.
+  "Face and eyes detected in xx%"      Turn on a light facing you,
+  (less than 90%)                      remove sunglasses, sit closer.
+  "sentences do not fit on one line"   Settings > Display > Scale:
+                                       choose 100% or 125%, try again.
+  Calibration says face detection      Improve lighting, sit straight
+  is unstable                          in front of the camera.
+  You pressed a wrong key / want to    Press ESC. Your data so far is
+  stop                                 kept; send the results file.
+  Anything else                        Take a photo of the black
+                                       window and send it to the
+                                       researcher.
+
+Thank you for your time!

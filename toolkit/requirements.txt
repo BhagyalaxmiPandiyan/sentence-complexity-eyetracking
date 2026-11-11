@@ -1,0 +1,12 @@
+gradio>=4.0
+scikit-learn
+pandas
+numpy
+wordfreq
+# Tamil tab (Phase 3)
+torch
+transformers
+stanza
+indic-nlp-library
+morfessor
+requests

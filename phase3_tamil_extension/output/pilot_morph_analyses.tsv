@@ -1,0 +1,189 @@
+word	source	analyses
+அடக்குவதாகக்	guesser	அடக்குவதாக+verb+nonfin+sim+inf+sandhik | அடக்குவ+noun+adv+sandhik
+அடையாளம்	lexicon	அடையாளம்+noun+nom
+அணுகுமுறை	guesser	அணுகுமுறை+noun+sg+nom
+அதன்	lexicon	அது+pron+dem+dist+pl+3sgn+gen
+அமைந்திருக்கிறது	guesser	அமைந்திருக்கி+noun+gen | அமைந்திருக்+verb+fin+sim+pres+3sgn
+அம்சம்	guesser	அம்சம்+noun+sg+nom
+அரசியல்	guesser	அரசியல்+noun+sg+nom
+அறிவியல்	guesser	அறிவியல்+noun+sg+nom
+அலங்காரங்களும்	guesser	அலங்காரங்களும்+noun+sg+nom
+அளபுருக்களையும்	none	
+அளவுமீறி	guesser	அளவுமீறி+noun+sg+nom
+அளவுவிகிதங்களுக்கான	guesser	அளவுவிகிதங்களுக்கா+noun+nmod | அளவுவிகிதங்களுக்கான+noun+sg+nom | அளவுவிகிதங்களுக்+noun+adj
+அளவுவிகிதங்களைக்	guesser	அளவுவிகிதங்களை+verb+nonfin+sim+inf+sandhik
+அளவுவிகிதம்	guesser	அளவுவிகிதம்+noun+sg+nom
+அழகியல்	guesser	அழகியல்+noun+sg+nom
+அழகு	lexicon	அழகு+noun+nom
+அழகுக்குப்	lexicon	அழகு+noun+dat+sandhip
+அழகைப்	guesser	அழகைப்+noun+sg+nom | அழகை+verb+nonfin+sim+inf+sandhip
+அவர்களின்	lexicon	அவர்கள்+pron+3sgh+dem+dist+abl | அவர்கள்+pron+3pl+dem+dist+abl
+அவற்றின்	lexicon	அவை+pron+dem+dist+3pl+abl
+ஆகியவற்றைக்	guesser	ஆகியவற்றைக்+noun+sg+nom | ஆகியவற்றை+verb+nonfin+sim+inf+sandhik
+ஆக்கம்	guesser	ஆக்கம்+noun+sg+nom
+ஆதிக்கம்	guesser	ஆதிக்கம்+noun+sg+nom
+ஆல்பர்ட்டியின்	guesser	ஆல்பர்ட்டி+noun+abl | ஆல்பர்ட்டி+noun+gen
+இங்கு	lexicon	இங்கு+adv | இங்கு+verb+fin+sim+imp=∅+2sg=∅
+இசை	lexicon	இசை+noun+nom | இசை+verb+fin+sim+imp=∅+2sg=∅
+இடைக்காலத்தில்	lexicon	இடைக்காலம்+noun+infInc+loc | இடைக்காலம்+noun+infInc+soc
+இன்னொரு	lexicon	இன்னொரு+adj
+இயல்பாக	guesser	இயல்பா+noun+nmod | இயல்பாக+noun+sg+nom | இயல்பா+verb+fin+sim+opt | இயல்+noun+adv
+இவரது	lexicon	இவர்+pron+2sgh+dem+prox+gen
+இவர்	lexicon	இவர்+pron+2sgh+dem+prox+nom
+உடலமைப்புக்	guesser	உடலமைப்பு+verb+nonfin+sim+inf+sandhik
+உடலின்	guesser	உட+noun+abl | உட+noun+gen
+உடல்	guesser	உடல்+noun+sg+nom
+உட்பட்ட	lexicon	உட்பட்ட+adj
+உண்மையில்	guesser	உண்மை+noun+loc
+உரோமானியக்	guesser	உரோமானியக்+noun+sg+nom | உரோமானிய+verb+nonfin+sim+inf+sandhik
+உறுதி	guesser	உறுதி+noun+sg+nom
+உளவியல்	guesser	உளவியல்+noun+sg+nom
+உள்ளடக்கியதாகும்	guesser	உள்ளடக்கியதாகும்+noun+sg+nom
+ஊ	guesser	ஊ+noun+sg+nom
+எடுதுதுக்காட்டுகளாகும்	guesser	எடுதுதுக்காட்டுகளாகும்+noun+sg+nom
+எனினும்	guesser	எனினும்+noun+sg+nom
+என்னும்	guesser	என்னும்+noun+sg+nom
+என்பது	lexicon	என்பது+comp
+என்பன	guesser	என்ப+noun+nmod | என்பன+noun+sg+nom
+என்பாரது	guesser	என்பா+noun+gen | என்பார+verb+nonfin+sim+vpart
+என்ற	lexicon	என்+verb+nonfin+sim+past=ற்+adjpart=அ
+என்று	lexicon	என்று+adv | என்று+comp | என்+verb+nonfin+sim+vpart=உ
+எல்லா	guesser	எல்லா+noun+sg+nom
+எழுதினார்	lexicon	எழுது+verb+fin+sim+strong+past=இன்+3sghe=ஆர்
+ஒட்டவைக்க	guesser	ஒட்டவைக்+verb+fin+sim+opt
+ஒன்றின்மீதொன்று	guesser	ஒன்றின்மீதொன்று+noun+sg+nom
+ஒரு	lexicon	ஒரு+adj | ஒரு+cardinal
+ஒருங்கினைப்பையும்	none	
+ஒவ்வொரு	lexicon	ஒவ்வொரு+adj
+கட்டடக்	guesser	கட்டடக்+noun+sg+nom | கட்டட+verb+nonfin+sim+inf+sandhik
+கட்டடக்கலை	guesser	கட்டடக்க+noun+acc | கட்டடக்கலை+noun+sg+nom
+கட்டமைப்பியம்	none	
+கட்டமைப்புகளை	none	
+கட்டிடகலை	guesser	கட்டிடக+noun+acc | கட்டிடகலை+noun+sg+nom
+கட்டிடக்	lexicon	கட்டிடு+verb+nonfin+complex+nonattitude+inf=அ+sandhik=க்
+கட்டிடக்கலை	guesser	கட்டிடக்க+noun+acc | கட்டிடக்கலை+noun+sg+nom
+கட்டிடக்கலைக்	guesser	கட்டிடக்க+noun+acc+sandhik | கட்டிடக்கலை+verb+nonfin+sim+inf+sandhik
+கட்டிடக்கலையிலும்	guesser	கட்டிடக்கலையிலும்+noun+sg+nom
+கட்டிடக்கலையில்	guesser	கட்டிடக்கலை+noun+loc
+கட்டிடக்கலையைச்	guesser	கட்டிடக்கலை+noun+acc+sandhic | கட்டிடக்கலையை+verb+nonfin+sim+inf+sandhic
+கட்டிடங்கள்	lexicon	கட்டிடம்+noun+pl+nom
+கட்டிடம்	lexicon	கட்டிடம்+noun+nom
+கட்டுப்படுத்தும்	guesser	கட்டுப்படுத்தும்+noun+sg+nom
+கட்டுவதை	guesser	கட்டுவதை+noun+sg+nom
+கணிதம்	lexicon	கணிதம்+noun+nom
+கருதும்போது	guesser	கருதும்போது+noun+sg+nom | கருதும்போ+verb+nonfin+sim+vpart
+கருத்து	lexicon	கருத்து+noun+nom
+கருத்துப்படி	guesser	கருத்துப்படி+noun+sg+nom
+கருத்தே	guesser	கருத்தே+noun+sg+nom
+கலாச்சார	guesser	கலாச்சா+noun+nmod | கலாச்சார+noun+sg+nom
+கலை	lexicon	கலை+noun+nom | கலை+verb+fin+sim+imp=∅+2sg=∅
+கலைகளிலும்	guesser	கலைகளிலும்+noun+sg+nom
+கலைஞனதும்	none	
+கலைஞன்	lexicon	கலைஞன்+noun+nom
+கலைஞரான	guesser	கலைஞரா+noun+nmod | கலைஞரான+noun+sg+nom | கலைஞ+noun+adj
+களமாகும்	guesser	களமாகும்+noun+sg+nom
+காட்டும்	lexicon	காட்டு+verb+fin+sim+strong+fut=உம்+3sgn=∅ | காட்டு+verb+fin+sim+strong+fut=உம்+3pln=∅ | காட்டு+verb+nonfin+sim+futANDadjpart=உம்
+காணப்படுகின்றது	guesser	காணப்படுகின்+noun+gen | காணப்படு+verb+fin+sim+pres+3sgn
+காணப்படுகின்றன	guesser	காணப்படுகின்ற+noun+nmod | காணப்படுகின்றன+noun+sg+nom | காணப்படு+verb+fin+sim+pres+3pln
+கிடைக்கும்	lexicon	கிடை+verb+nonfin+sim+futANDadjpart=உம்
+குறிப்பாக	guesser	குறிப்பா+noun+nmod | குறிப்பாக+noun+sg+nom | குறிப்பா+verb+fin+sim+opt | குறிப்+noun+adv
+குறிப்பிடுகிறோம்	guesser	குறிப்பிடுகிறோம்+noun+sg+nom | குறிப்பிடு+verb+fin+sim+pres+1pl
+கூற்றுப்படி	guesser	கூற்றுப்படி+noun+sg+nom
+கையாளல்	guesser	கையாளல்+noun+sg+nom
+கொண்ட	lexicon	கொள்+verb+nonfin+sim+past=ட்+adjpart=அ
+கொண்டிருக்கவேண்டும்	guesser	கொண்டிருக்கவேண்டும்+noun+sg+nom
+கொண்டிருத்தலே	guesser	கொண்டிருத்தலே+noun+sg+nom
+கொண்டுவந்து	lexicon	கொண்டுவா+verb+nonfin+complex+nonattitude+vpart=உ
+கொள்ளலாம்	guesser	கொள்ளலாம்+noun+sg+nom | கொள்ள+verb+nonfin+sim+inf+moodpart
+கோட்பாடுகள்	guesser	கோட்பாடு+noun+pl+nom
+சமனிலையையும்	guesser	சமனிலையையும்+noun+sg+nom
+சமூக	guesser	சமூ+noun+nmod | சமூக+noun+sg+nom | சமூ+verb+fin+sim+opt
+சாதனைகளின்	guesser	சாதனை+noun+pl+abl
+சின்னங்களாக	guesser	சின்னங்களா+noun+nmod | சின்னங்களாக+noun+sg+nom | சின்னங்களா+verb+fin+sim+opt | சின்னங்க+noun+adv
+சிறப்பான	guesser	சிறப்பா+noun+nmod | சிறப்பான+noun+sg+nom | சிறப்+noun+adj
+சில	lexicon	சில+adj
+செயற்பாடு	guesser	செயற்பாடு+noun+sg+nom
+செயற்பாட்டு	guesser	செயற்பாட்டு+noun+sg+nom
+செயல்முறைத்	guesser	செயல்முறைத்+noun+sg+nom | செயல்முறை+verb+nonfin+sim+inf+sandhit
+செய்த	lexicon	செய்+verb+nonfin+sim+past=த்+adjpart=அ
+செலுத்தாமல்	lexicon	செலுத்து+verb+nonfin+sim+neg=ஆ+vpart=மல்
+செல்வாக்கைக்	guesser	செல்வாக்கைக்+noun+sg+nom | செல்வாக்கை+verb+nonfin+sim+inf+sandhik
+சேர்ந்த	lexicon	சேர்ந்த+adj | சேர்+verb+nonfin+sim+past=த்+adjpart=அ
+சொல்லலாம்	lexicon	சொல்+verb+nonfin+sim+inf=அ+moodpart=ஆம் | சொல்லு+verb+nonfin+sim+inf=அ+moodpart=ஆம்
+தங்களிடையே	guesser	தங்களிடையே+noun+sg+nom
+தத்துவத்தின்	lexicon	தத்துவம்+noun+infInc+gen | தத்துவம்+noun+infInc+abl
+தத்துவம்	lexicon	தத்துவம்+noun+nom
+தன்னுள்	guesser	தன்னுள்+noun+sg+nom
+தன்மைக்குப்	none	
+தற்போது	lexicon	தற்போது+adv
+திட்டமிடல்	guesser	திட்டமிடல்+noun+sg+nom
+துறைகளிலும்	guesser	துறைகளிலும்+noun+sg+nom
+தொடர்பான	guesser	தொடர்பா+noun+nmod | தொடர்பான+noun+sg+nom | தொடர்+noun+adj
+தொடர்பிலானது	guesser	தொடர்பிலா+noun+gen | தொடர்பிலான+verb+nonfin+sim+vpart
+தொடர்பில்	guesser	தொடர்பில்+noun+sg+nom
+தொடர்புள்ள	guesser	தொடர்புள்+noun+nmod | தொடர்புள்ள+noun+sg+nom
+தொழில்நுட்பம்	lexicon	தொழில்நுட்பம்+noun+nom
+தோற்றப்பாட்டியல்	guesser	தோற்றப்பாட்டியல்+noun+sg+nom
+நல்ல	lexicon	நல்ல+adj
+நாகரிகங்கள்	lexicon	நாகரிகம்+noun+pl+nom
+நூற்றாண்டைச்	guesser	நூற்றாண்டைச்+noun+sg+nom | நூற்றாண்டை+verb+nonfin+sim+inf+sandhic
+நூலாகும்	guesser	நூலாகும்+noun+sg+nom
+நோக்குகிறது	lexicon	நோக்கு+verb+fin+sim+strong+pres=கிற்+3sgn=அது
+பகுத்தறிவியம்	guesser	பகுத்தறிவியம்+noun+sg+nom
+பங்களிப்புச்	guesser	பங்களிப்புச்+noun+sg+nom | பங்களிப்பு+verb+nonfin+sim+inf+sandhic
+பங்கு	lexicon	பங்கு+noun+nom
+படைப்புகளாக	guesser	படைப்புகளா+noun+nmod | படைப்புகளாக+noun+sg+nom | படைப்புகளா+verb+fin+sim+opt | படைப்புக+noun+adv
+படைப்புகள்	guesser	படைப்பு+noun+pl+nom
+பட்டறிவியம்	guesser	பட்டறிவியம்+noun+sg+nom
+பயன்பாடு	guesser	பயன்பாடு+noun+sg+nom
+பரிச்சயமுடையவனாயிருக்க	guesser	பரிச்சயமுடையவனாயிருக்+noun+nmod | பரிச்சயமுடையவனாயிருக்க+noun+sg+nom | பரிச்சயமுடையவனாயிருக்+verb+fin+sim+opt
+பற்றிக்	lexicon	பற்று+verb+nonfin+sim+vpart=இ+sandhik=க்
+பல்துறைக்	guesser	பல்துறைக்+noun+sg+nom | பல்துறை+verb+nonfin+sim+inf+sandhik
+பழைய	lexicon	பழைய+adj
+பாணி	lexicon	பாணி+verb+fin+sim+imp=∅+2sg=∅
+பார்த்தால்	lexicon	பார்+verb+nonfin+sim+con=ஆல்
+பின்கட்டமைப்பியம்	none	
+பிற	lexicon	பிற+verb+fin+sim+imp=∅+2sg=∅
+புறம்பாக	guesser	புறம்பா+noun+nmod | புறம்பாக+noun+sg+nom | புறம்பா+verb+fin+sim+opt | புறம்+noun+adv
+பெரும்பாலும்	lexicon	பெரும்பாலும்+adv
+பொ	guesser	பொ+noun+sg+nom
+பொன்றவற்றுடன்	guesser	பொன்றவற்றுடன்+noun+sg+nom
+பொருளின்	lexicon	பொருள்+noun+gen | பொருள்+noun+abl
+பொருள்	lexicon	பொருள்+noun+nom
+பொருள்களோடு	guesser	பொருள்+noun+pl+soc
+போக்குகள்	lexicon	போக்கு+noun+pl+nom
+போதிலும்	guesser	போதிலும்+noun+sg+nom
+போன்ற	lexicon	போன்ற+adj | போல்+verb+nonfin+sim+past=ற்+adjpart=அ
+மனிதனின்	lexicon	மனிதன்+noun+gen | மனிதன்+noun+abl
+மற்றும்	lexicon	மற்றும்+conjuction
+மிகப்	lexicon	மிக+intensifier+sandhip
+முக்கிய	lexicon	முக்கிய+adj
+முக்கியமான	guesser	முக்கியமா+noun+nmod | முக்கியமான+noun+sg+nom | முக்கிய+noun+adj
+முடியாது	lexicon	முடி+verb+nonfin+sim+neg=ஆது+vpart=∅
+முதலாம்	guesser	முதலாம்+noun+sg+nom | முத+verb+nonfin+sim+inf+moodpart
+முதலிய	lexicon	முதலிய+adj
+முறையான	guesser	முறையா+noun+nmod | முறையான+noun+sg+nom | முறை+noun+adj
+மூன்றும்	guesser	மூன்றும்+noun+sg+nom
+மூலம்	lexicon	மூலம்+pp-particle
+மேற்படி	lexicon	மேற்படி+adj
+மேலான	guesser	மேலா+noun+nmod | மேலான+noun+sg+nom | மே+noun+adj
+மேலும்	lexicon	மேலும்+adj | மேலும்+adv
+மொழிகள்	lexicon	மொழி+noun+pl+nom
+வகித்தது	lexicon	வகி+verb+fin+sim+strong+past=த்+3sgn=அது
+வடிவமைத்தல்	none	
+வடிவம்	lexicon	வடிவம்+noun+nom
+வரலாறு	lexicon	வரலாறு+noun+nom
+வரலாற்று	guesser	வரலாற்று+noun+sg+nom
+வரைவிலக்கணம்	guesser	வரைவிலக்கணம்+noun+sg+nom
+வானியல்	guesser	வானியல்+noun+sg+nom
+விக்கிப்பீடியா	guesser	விக்கிப்பீடியா+noun+sg+nom
+விடயங்களைக்	guesser	விடயங்களை+verb+nonfin+sim+inf+sandhik
+விடயத்தில்	guesser	விடயத்தில்+noun+sg+nom
+விட்ருவியசின்	guesser	விட்ருவியசின்+noun+sg+nom
+விட்ருவியஸ்	guesser	விட்ருவியஸ்+noun+sg+nom
+விதத்தில்	lexicon	விதம்+noun+infInc+loc | விதம்+noun+infInc+soc
+விதிகளாகும்	guesser	விதிகளாகும்+noun+sg+nom
+விதிகளே	guesser	விதிகளே+noun+sg+nom
+விருப்பத்துக்குரியது	none	
+வெளியிலிருந்து	lexicon	வெளி+noun+abl
+வேண்டும்	lexicon	வேண்டு+verb+fin+sim+strong+fut=உம்+3sgn=∅ | வேண்டு+verb+fin+sim+strong+fut=உம்+3pln=∅ | வேண்டு+verb+nonfin+sim+futANDadjpart=உம்
