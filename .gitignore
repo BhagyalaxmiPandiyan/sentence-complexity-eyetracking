@@ -60,3 +60,7 @@ phase3_tamil_extension/Dataset/complex_sentences/original.csv
 phase3_tamil_extension/Dataset/complex_sentences/prompt_batch*.txt
 phase3_tamil_extension/Dataset/complex_sentences/simplified_*.txt
 phase3_tamil_extension/Dataset/human_study/items_key.csv
+
+# OasisSimp (no license file in release) - evaluation only, not redistributed
+phase3_tamil_extension/Dataset/oasissimp/
+phase3_tamil_extension/output/oasissimp_features.csv

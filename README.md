@@ -8,6 +8,9 @@ M.Tech project. It has three phases and one toolkit:
 
 The **toolkit** shows each phase live, on sentences the user types in.
 
+- **Rebuild everything step by step:** [REPLICATION.md](REPLICATION.md)
+- **Thesis:** [thesis_report/](thesis_report/), PDF and Word versions plus the source to rebuild them
+
 ## Folder map
 
 ```
@@ -29,6 +32,8 @@ Final One/
 │   ├── Dataset/                textbooks, StoryWeaver, 60 test sentences, human study
 │   └── tools/                  UD Tamil treebank, IndicNLP resources
 ├── toolkit/                    live demo app (Gradio)
+├── thesis_report/              MTP thesis (PDF, DOCX) + source/ to rebuild it
+├── REPLICATION.md              end-to-end replication guide
 ├── presentations/              slides for evaluations (old_presentations/ = earlier decks)
 └── _archive/                   old backup and side material, not part of the thesis
 ```
@@ -76,9 +81,10 @@ Run: `phase1_replication/experiments/compute_gpt2_surprisal.py`, then `train_sys
 | C · Human study | 12 native readers, 6 ratings per pair | Difficulty 2.31 → 1.97; word ρ = +0.32, morph ρ = +0.28, no significant difference |
 | C · LLM judge | Gemini as an extra judge, reported separately | Agrees with humans (+0.30) but is over-optimistic |
 | C2 · Eye-tracking | Own webcam study (Tool/TamilReadingWeb), 100 Tamil sentences, 5 readers | TD R²: word 0.103, morph 0.071, word + morph 0.099 (no gain); sentence reading time ρ word 0.85, morph 0.68 |
+| External test | OasisSimp Tamil: 1,904 human-simplified pairs (Liu et al., LREC 2026) | Word metric picks the complex sentence 95.6% (morph 93.4%, significantly lower) |
 | D · Paper | `phase3_tamil_extension/Phase3_Research_Paper.md` (+ PDF) | Done |
 
-Run: `phase3_tamil_extension/src/step0_…` → `step11_eyetracking.py` (details in [phase3_tamil_extension/README.md](phase3_tamil_extension/README.md)).
+Run: `phase3_tamil_extension/src/step0_…` → `step12_oasissimp.py` (details in [phase3_tamil_extension/README.md](phase3_tamil_extension/README.md)).
 
 ## Toolkit
 

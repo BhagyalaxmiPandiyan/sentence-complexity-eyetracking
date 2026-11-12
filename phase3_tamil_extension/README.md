@@ -33,6 +33,7 @@ Each script reads a CSV and writes a CSV to `output/` (same convention as `phase
 | `step9_human_eval.py` | C | Human ratings vs both metrics (Spearman, item bootstrap), rater agreement | `results/human_eval_summary.md` |
 | `step10_llm_judge.py` | C | Optional Gemini rating comparison, reported separately from human ratings | `results/llm_judge_gemini-3.5-flash-lite.md` |
 | `step11_eyetracking.py` | C2 | Webcam eye-tracking data (`Tamil Reading Study data.xlsx`): reader QC, Dundee-style word measures, System 1 R² for A / B / A+B, sentence reading time vs both metrics | `output/eyetracking_*.csv`, `results/eyetracking_summary.md` |
+| `step12_oasissimp.py` | ext. | External test on OasisSimp Tamil (520 complex sentences, 1,904 human simplification pairs; data not redistributed, download into `Dataset/oasissimp/`) | `results/oasissimp_summary.md` |
 | `tamil_text.py` | — | Shared PDF font repair helpers | — |
 
 The feature CSVs are already in `output/`, so steps 3 and 5 (slow, CPU-only) don't need
@@ -79,6 +80,12 @@ this is mostly length. Readers agree on sentence reading time (ρ = 0.64) but on
 word by word (ρ ≈ 0.10–0.20; webcam error ≈ one word), so this is a feasibility pilot.
 Reader handling: the 2026-11-11 session typed as R02 is a different person (→ R05);
 123 is reader 1111 again, so only his 50 not-yet-read sentences are used.
+
+**External test — OasisSimp Tamil** (Liu et al., LREC 2026; human simplifications, never
+used for training; `results/oasissimp_summary.md`): the complex sentence is scored harder in
+**95.6%** of 1,904 pairs by the word metric and 93.4% by the morph metric; on 359 length-matched
+pairs 90.5% vs 83.3%. Here morph is significantly *worse* than word (−2.3 pts, CI −3.3 to −1.2;
+length-matched −7.2 pts).
 
 ## Caveats
 
