@@ -1,6 +1,8 @@
 # End-to-end replication guide
 
 This file explains how to rebuild every number in the thesis from raw data, in order.
+**Quick way:** double-click `RUN_PIPELINE.bat` (re-runs the main steps and prints their numbers)
+or `START_TOOLKIT.bat` (live demo); see the main [README](README.md).
 Each step lists the command to run, the time it takes, the files it writes and the numbers
 it should print. The folder-level READMEs have more detail:
 [phase1_replication/README.md](phase1_replication/README.md),
@@ -70,7 +72,7 @@ Run from `phase1_replication/`. Each step reads from and writes to `output/`.
 | 1 | `python src/step1_parse_dundee.py` | ~1 min | `dundee_rt.csv` | ~307K word×reader rows, 10 readers |
 | 2 | `python src/step2_lexical_features.py` | ~20 min (BNC) | `lexical_features.csv` | word length, frequency, AoA, bigram probabilities |
 | 3 | `python src/step3_syntactic_features.py` | ~1 h | `syntactic_features.csv` | surprisal, embedding depth, entropy reduction |
-| 4 | `python src/step4_system1.py` | ~2 min | `system1_models.pkl`, `system1_predictions.csv` | test R²: FFD 0.447, FPD 0.561, RPD 0.558, TD 0.538 |
+| 4 | `python src/step4_system1.py` | ~10 s | `system1_models.pkl`, `system1_predictions.csv` | test R²: FFD 0.444, FPD 0.558, RPD 0.555, TD 0.536 (thesis Table 4.1: 0.447 / 0.561 / 0.558 / 0.538 from an earlier feature version, see Section 4) |
 | 5 | `python src/step5_system2.py` | 30–40 min | accuracy table | Base RT 74.15%, Extended RT 75.26% (paper 73.82 / 75.21) |
 
 Extra check on the FFD gap with the paper (thesis Section 4.3):
@@ -131,6 +133,7 @@ again, follow [Tool/TamilReadingWeb/HOW_TO_SHARE.md](Tool/TamilReadingWeb/HOW_TO
 cd toolkit
 C:\Python313\python.exe train_system2.py     # once: Phase 1 System 2 model (needs Phase 1 outputs)
 C:\Python313\python.exe train_phase2.py      # once: Phase 2 models (~1 min)
+C:\Python313\python.exe build_bnc_db.py     # once: BNC word-pair lookup for Phase 1 ② (~1 min)
 C:\Python313\python.exe app.py               # opens http://127.0.0.1:7860
 ```
 
