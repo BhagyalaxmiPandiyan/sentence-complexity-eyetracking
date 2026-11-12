@@ -130,6 +130,7 @@ def compare_sentences(sentence_a, sentence_b):
         return f"**Sentence B is more complex** (confidence: {(1 - prob_a_harder) * 100:.1f}%)"
 
 
+import phase1_full  # noqa: E402  (Phase 1, all 19 features live)
 import phase2  # noqa: E402  (Phase 2; loads GPT-2 in the background)
 import tamil  # noqa: E402  (Phase 3; starts loading its models in the background)
 import ui  # noqa: E402  (look and explanation pages)
@@ -208,20 +209,38 @@ with gr.Blocks(title="Sentence Difficulty Toolkit") as demo:
 
     with gr.Tab("Phase 1 · English"):
         gr.HTML(ui.PHASE1_INTRO)
-        with gr.Row():
-            en_a = gr.Textbox(label="Sentence A", placeholder="e.g. The dog ran to the park.")
-            en_b = gr.Textbox(label="Sentence B",
-                              placeholder="e.g. The committee's protracted deliberations culminated in an unanticipated resolution.")
-        en_btn = gr.Button("Which sentence is harder?", variant="primary")
-        gr.Examples(
-            [["The dog ran to the park.",
-              "The committee's protracted deliberations culminated in an unanticipated resolution."],
-             ["Photosynthesis is the biochemical process whereby chlorophyll-containing organisms "
-              "convert electromagnetic radiation into chemical energy.",
-              "Plants use sunlight to make food."]],
-            inputs=[en_a, en_b])
-        en_out = gr.HTML()
-        en_btn.click(phase1_view, [en_a, en_b], en_out)
+        with gr.Tab("① Which is harder? (System 2)"):
+            with gr.Row():
+                en_a = gr.Textbox(label="Sentence A", placeholder="e.g. The dog ran to the park.")
+                en_b = gr.Textbox(label="Sentence B",
+                                  placeholder="e.g. The committee's protracted deliberations culminated in an unanticipated resolution.")
+            en_btn = gr.Button("Which sentence is harder?", variant="primary")
+            gr.Examples(
+                [["The dog ran to the park.",
+                  "The committee's protracted deliberations culminated in an unanticipated resolution."],
+                 ["Photosynthesis is the biochemical process whereby chlorophyll-containing organisms "
+                  "convert electromagnetic radiation into chemical energy.",
+                  "Plants use sunlight to make food."]],
+                inputs=[en_a, en_b])
+            en_out = gr.HTML()
+            en_btn.click(phase1_view, [en_a, en_b], en_out)
+        with gr.Tab("② All 19 features of a sentence (System 1)"):
+            gr.HTML(ui.wrap(
+                "<h3>② All 19 features of one sentence, live → System 1 reading times</h3>"
+                + ui.flow([("1 · Your sentence", "any English sentence"),
+                           ("2 · Resources", "wordfreq, AoA norms, BNC word pairs, Berkeley + left-corner parser "
+                                             "(the thesis parser, running live), dependency parse"),
+                           ("3 · 19 features", "for every word, same formulas as the pipeline"),
+                           ("4 · System 1", "FFD, FPD, RPD and TD for every word")])
+                + "<p class='muted'>The parser takes about 30 seconds to start after the toolkit opens; "
+                  "each sentence then takes a few seconds.</p>"))
+            f1_in = gr.Textbox(label="English sentence")
+            f1_btn = gr.Button("Compute all features", variant="primary")
+            gr.Examples([["A little further on were the blue-footed boobies, birds with brilliant china-blue feet, again unique."],
+                         ["The dog ran to the park."],
+                         ["The horse raced past the barn fell."]], inputs=[f1_in])
+            f1_out = gr.HTML()
+            f1_btn.click(phase1_full.view, [f1_in], f1_out)
 
     with gr.Tab("Phase 2 · GPT-2"):
         gr.HTML(ui.PHASE2_INTRO)

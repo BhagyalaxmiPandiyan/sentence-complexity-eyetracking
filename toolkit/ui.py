@@ -161,8 +161,9 @@ and uses them to decide <b>which sentence is harder</b>, then makes hard Tamil s
 PHASE1_INTRO = wrap(f"""
 <h2>Phase 1 · Replication of Singh et al. (2016)</h2>
 <p class="lead">Type two English sentences. The toolkit runs the same two systems as the paper.</p>
-{flow([("1 · Features", "for every word: length, frequency, age of acquisition"),
-       ("2 · System 1", "ridge regression predicts the <b>first fixation time</b> (ms) of every word, learned from Dundee"),
+{flow([("1 · Features", "19 per word: length, frequency, age of acquisition, BNC word-pair probabilities, "
+                         "surprisal, parser features (see tab ②)"),
+       ("2 · System 1", "ridge regression predicts the <b>reading times</b> (ms) of every word, learned from Dundee"),
        ("3 · System 2", "logistic regression compares the two lists of reading times: <b>which sentence is harder?</b>")])}
 <div class="grid g2" style="margin-top:12px">
  <div class="card"><b>What the replication achieved</b>
@@ -178,8 +179,10 @@ PHASE1_INTRO = wrap(f"""
   <tr><td>TD total duration</td><td class="c"><b>0.538</b></td><td class="c">0.516</td></tr></table>
   <p class="muted">The paper's own Table 1 and Table 2 disagree on FFD.</p></div>
 </div>
-<p class="muted" style="margin-top:8px">Live demo note: the toolkit computes the lexical features live; the parser
-features need the Penn Treebank parser and are left out here (the same lexical path as step 5 of the pipeline).</p>
+<p class="muted" style="margin-top:8px"><b>① Which is harder?</b> runs System 2 exactly as in the thesis: for the
+117,712 Wikipedia pairs, step 5 used the lexical features (parsing 235,000 sentences was too heavy), so the verdict
+here does the same and reproduces the 75.26% model. <b>② All 19 features</b> computes every feature live,
+including the thesis's left-corner parser, and shows all four System 1 reading times.</p>
 """)
 
 PHASE2_INTRO = wrap(f"""

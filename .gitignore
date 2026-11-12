@@ -64,3 +64,6 @@ phase3_tamil_extension/Dataset/human_study/items_key.csv
 # OasisSimp (no license file in release) - evaluation only, not redistributed
 phase3_tamil_extension/Dataset/oasissimp/
 phase3_tamil_extension/output/oasissimp_features.csv
+
+# Toolkit BNC bigram lookup (595 MB) - rebuild with toolkit/build_bnc_db.py
+toolkit/data/bnc.sqlite

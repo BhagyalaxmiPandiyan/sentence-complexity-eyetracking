@@ -22,12 +22,25 @@ C:\Python313\python.exe app.py --share    # also a temporary public link (~72 ho
 The page opens in light mode so it projects well. Wait about a minute for the Tamil and
 GPT-2 models to load.
 
+**Phase 1 · ② All 19 features** needs two extra things (once):
+
+1. `C:\Python313\python.exe build_bnc_db.py`: builds `data/bnc.sqlite` (595 MB, not in git) from the
+   BNC bigram counts of Phase 1 step 2 (`phase1_replication/output/bnc_bigrams*.csv`).
+2. WSL Ubuntu with the Phase 1 parser set-up (Berkeley parser, `linetrees2synprocdecpars`, see
+   `phase1_replication/experiments/build_lcparse_surprisal.py`). The toolkit starts `lc_server.py`
+   inside WSL, which keeps the Berkeley parser loaded and returns the left-corner syntactic surprisal
+   per word, identical to the stored thesis values. Without WSL the page falls back to POS-bigram
+   surprisal and says so.
+
+The first sentence takes about 15 seconds (parser warm-up), then about 5 seconds each.
+
 ## What each tab shows
 
 | Tab | Input | What happens on screen |
 |---|---|---|
 | **Home** | — | The project story and the key result of each phase |
-| **Phase 1 · English** | two sentences | Predicted first-fixation time for every word (bars), the word features, and System 2's verdict, plus replication results vs the paper |
+| **Phase 1 · English → ① Which is harder?** | two sentences | Predicted first-fixation time for every word (bars) and System 2's verdict (thesis model), plus replication results vs the paper |
+| **Phase 1 · English → ② All 19 features** | one sentence | All 19 System 1 features per word computed live (incl. the left-corner parser), FFD / FPD / RPD / TD per word, feature meanings, parse tree |
 | **Phase 2 · GPT-2** | one sentence | GPT-2 surprisal per word, total reading time with vs without GPT-2 (bars), all four measures, R² table |
 | **Phase 3 · Tamil → ① How we did it** | — | The 8 steps of the Tamil work (data, features, metrics, tests, simplification, human study, eye-tracking, OasisSimp) with results |
 | **Phase 3 · Tamil → ② Analyse a sentence** | one Tamil sentence | StoryWeaver level for both metrics, a card per word (Morfessor parts, root, grammar marks, GPT-2 surprisal, frequency, dependency), the 12 features vs typical level-1 and level-4 sentences, and the full proof tables |
