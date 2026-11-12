@@ -15,12 +15,26 @@ using those predicted reading times plus sentence-level features.
 
 ```
 pip install -r requirements.txt
-python app.py
+C:\Python313\python.exe app.py            # local only: http://127.0.0.1:7860
+C:\Python313\python.exe app.py --share    # also a temporary public link (~72 hours)
 ```
 
-This opens a local URL (`http://127.0.0.1:7860`) **and** a temporary public
-link (`https://xxxxx.gradio.live`, valid ~72 hours) — good enough to share
-with your professor without any hosting setup.
+The page opens in light mode so it projects well. Wait about a minute for the Tamil and
+GPT-2 models to load.
+
+## What each tab shows
+
+| Tab | Input | What happens on screen |
+|---|---|---|
+| **Home** | — | The project story and the key result of each phase |
+| **Phase 1 · English** | two sentences | Predicted first-fixation time for every word (bars), the word features, and System 2's verdict, plus replication results vs the paper |
+| **Phase 2 · GPT-2** | one sentence | GPT-2 surprisal per word, total reading time with vs without GPT-2 (bars), all four measures, R² table |
+| **Phase 3 · Tamil → ① How we did it** | — | The 8 steps of the Tamil work (data, features, metrics, tests, simplification, human study, eye-tracking, OasisSimp) with results |
+| **Phase 3 · Tamil → ② Analyse a sentence** | one Tamil sentence | StoryWeaver level for both metrics, a card per word (Morfessor parts, root, grammar marks, GPT-2 surprisal, frequency, dependency), the 12 features vs typical level-1 and level-4 sentences, and the full proof tables |
+| **Phase 3 · Tamil → ③ Which is harder?** | two Tamil sentences | Verdict with confidence, both metrics, feature comparison |
+| **Phase 3 · Tamil → ④ Simplify** | a Tamil sentence or a study pair | Gemini simplification, level before → after for both metrics, feature changes, and the native readers' ratings |
+
+`ui.py` holds the page design and the explanation pages; `tamil.py` and `phase2.py` the logic.
 
 ## Deploy permanently (free, Hugging Face Spaces)
 

@@ -92,6 +92,7 @@ def _load():
         sw = pd.read_csv(SW_FEATS_CSV)
         sc = mm.score(sw, _state["metrics"])
         _state["levels"] = pd.concat([sw["level"], sc], axis=1).groupby("level").mean()
+        _state["feat_levels"] = sw.groupby("level")[[c for c, _, _ in FEATURE_LABELS]].mean()
     except Exception as e:                                     # shown in the UI instead of crashing
         _state["error"] = f"{type(e).__name__}: {e}"
     _ready.set()
@@ -340,3 +341,111 @@ EXAMPLE = PAIRS[next(iter(PAIRS))]["original"] if PAIRS else ""
 _p = list(PAIRS.values())
 EXAMPLES = [[_p[0]["original"], _p[0]["simplified"]],
             [_p[1]["simplified"], _p[1]["original"]]] if len(_p) > 1 else []
+
+
+# ── visual views (used by app.py) ────────────────────────────────────────────
+import ui  # noqa: E402
+
+KEY = ["n_words", "word_len", "word_zipf", "morphs_per_word", "nonfinite_verbs"]
+LABEL = {c: lab for c, lab, _ in FEATURE_LABELS}
+
+
+def _feature_compare_table(cols_vals, cols=None):
+    """HTML table: feature | value(s) | typical StoryWeaver level 1 | level 4."""
+    fl = _state["feat_levels"]
+    cols = cols or [c for c, _, _ in FEATURE_LABELS]
+    head = "".join(f'<th class="c">{ui.esc(n)}</th>' for n, _ in cols_vals)
+    rows = []
+    for c in cols:
+        grp = next(g for k, _, g in FEATURE_LABELS if k == c).split(" ")[0]
+        vals = "".join(f'<td class="c"><b>{float(f[c]):.2f}</b></td>' for _, f in cols_vals)
+        rows.append(f"<tr><td>{grp} · {ui.esc(LABEL[c])}</td>{vals}"
+                    f'<td class="c">{fl.loc[1, c]:.2f}</td><td class="c">{fl.loc[4, c]:.2f}</td></tr>')
+    return (f'<table class="t"><tr><th>Feature</th>{head}<th class="c">Typical level 1</th>'
+            f'<th class="c">Typical level 4</th></tr>{"".join(rows)}</table>')
+
+
+def analyze_view(text):
+    if not text or not TAMIL_CHAR.search(text):
+        return ui.wrap("<p>Please type a Tamil sentence.</p>"), "", None, None
+    _wait()
+    f, n = text_features(text)
+    sc = text_scores(f)
+    lw, lm = nearest_level("word", sc["word"]), nearest_level("morph", sc["morph"])
+    top = ui.wrap(f"""
+<div class="grid g2">
+ <div class="card blue"><span class="tag">Word metric · group A</span>
+  <div class="big" style="margin-top:6px">reads like level {lw}</div><p class="muted">score {sc['word']:+.2f}</p>{ui.levels(lw)}</div>
+ <div class="card orange"><span class="tag orange">Morph metric · groups A + B</span>
+  <div class="big orange" style="margin-top:6px">reads like level {lm}</div><p class="muted">score {sc['morph']:+.2f}</p>{ui.levels(lm, "orange")}</div>
+</div>
+<p class="muted">Step 4 · Result. StoryWeaver level 1 = easiest, 4 = hardest. {"Text has " + str(n) + " sentences; features are averaged." if n > 1 else ""}</p>""")
+    wt = word_table(text)
+    cards = ui.wrap("<h3>Step 2 · What the tools found in every word</h3>" + ui.word_cards(wt)
+                    + "<h3>Step 3 · The 12 sentence features, next to typical easy and hard sentences</h3>"
+                    + _feature_compare_table([("This sentence", f)]))
+    return top, cards, wt, feature_proof(f)
+
+
+def compare_two_view(sentence_a, sentence_b):
+    if not (sentence_a and sentence_b and TAMIL_CHAR.search(sentence_a) and TAMIL_CHAR.search(sentence_b)):
+        return ui.wrap("<p>Please enter both Tamil sentences.</p>")
+    _wait()
+    fa, _ = text_features(sentence_a)
+    fb, _ = text_features(sentence_b)
+    sa, sb = text_scores(fa), text_scores(fb)
+    p_a = 1 / (1 + np.exp(-(sa["word"] - sb["word"])))
+    harder, conf = ("A", p_a) if p_a >= 0.5 else ("B", 1 - p_a)
+    agrees = (sa["morph"] > sb["morph"]) == (harder == "A")
+
+    def card(name, s):
+        lv = nearest_level("word", s["word"])
+        cls = "orange" if name == harder else "blue"
+        return (f'<div class="card {cls}"><span class="tag {cls}">Sentence {name}'
+                f'{" · harder" if name == harder else ""}</span>'
+                f'<p style="margin-top:6px">word score <b>{s["word"]:+.2f}</b> · morph score <b>{s["morph"]:+.2f}</b></p>'
+                f'{ui.levels(lv, cls if cls == "orange" else "")}</div>')
+    return ui.wrap(f"""
+<div class="verdict orange">Sentence {harder} is harder ({conf * 100:.1f}% confident) ·
+ morph metric {"agrees ✓" if agrees else "disagrees ✗"}</div>
+<div class="grid g2">{card("A", sa)}{card("B", sb)}</div>
+<h3>Why: the features of both sentences</h3>
+{_feature_compare_table([("A", fa), ("B", fb)])}
+<p class="muted">Confidence = sigmoid(score A − score B) of the word metric, the same pair model as the thesis.</p>""")
+
+
+def compare_view(original, simplified):
+    if not (original and simplified and TAMIL_CHAR.search(original) and TAMIL_CHAR.search(simplified)):
+        return ui.wrap("<p>Please fill in both boxes with Tamil text.</p>")
+    _wait()
+    fo, _ = text_features(original)
+    fs, _ = text_features(simplified)
+    so, ss = text_scores(fo), text_scores(fs)
+    cards = []
+    for m, name, cls in [("word", "Word metric", "blue"), ("morph", "Morph metric", "orange")]:
+        d = ss[m] - so[m]
+        ok = d < 0
+        cards.append(
+            f'<div class="card {"green" if ok else ""}"><span class="tag {"green" if ok else "grey"}">{name}</span>'
+            f'<div class="big {"orange" if cls == "orange" else ""}" style="margin-top:6px">'
+            f'level {nearest_level(m, so[m])} → {nearest_level(m, ss[m])}</div>'
+            f'<p>score {so[m]:+.2f} → {ss[m]:+.2f} ({d:+.2f}) · <b>{"✓ simplified is easier" if ok else "✗ not easier"}</b></p></div>')
+    return ui.wrap(f"""
+<div class="grid g2">{"".join(cards)}</div>
+<h3>What changed in the features</h3>
+{_feature_compare_table([("Original", fo), ("Simplified", fs)])}""")
+
+
+def load_pair_view(label):
+    o, s, md = load_pair(label)
+    if not label or label not in PAIRS:
+        return o, s, ""
+    p = PAIRS[label]
+    return o, s, ui.wrap(f"""
+<div class="card green"><span class="tag green">What {p['n']} native readers said about this pair</span>
+<div class="grid g4" style="margin-top:8px">
+ <div><div class="big" style="color:#1E7B45">{p['diff_orig']:.2f} → {p['diff_simp']:.2f}</div><p class="muted">difficulty (1 easy – 5 hard)</p></div>
+ <div><div class="big" style="color:#1E7B45">{p['picked_simp']:.0%}</div><p class="muted">picked the simplified one as easier</p></div>
+ <div><div class="big" style="color:#1E7B45">{p['meaning']:.2f}</div><p class="muted">meaning kept (1–5)</p></div>
+ <div><div class="big" style="color:#1E7B45">{p['err_simp']:.0%}</div><p class="muted">saw an error in the simplified one</p></div>
+</div></div>""")

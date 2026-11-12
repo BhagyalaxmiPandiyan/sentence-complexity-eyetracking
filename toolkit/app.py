@@ -132,87 +132,163 @@ def compare_sentences(sentence_a, sentence_b):
 
 import phase2  # noqa: E402  (Phase 2; loads GPT-2 in the background)
 import tamil  # noqa: E402  (Phase 3; starts loading its models in the background)
+import ui  # noqa: E402  (look and explanation pages)
+
+
+def phase1_view(sentence_a, sentence_b):
+    """Verdict + the System 1 output (predicted first-fixation time per word) for both sentences."""
+    if not sentence_a.strip() or not sentence_b.strip():
+        return ui.wrap("<p>Please enter both sentences.</p>")
+    X = build_feature_vector(sentence_a, sentence_b)
+    p_a = SYSTEM2["model"].predict_proba(SYSTEM2["scaler"].transform(X))[0][1]
+    harder, conf = ("A", p_a) if p_a >= 0.5 else ("B", 1 - p_a)
+    parts = []
+    for name, sent, colour in [("A", sentence_a, "#1F4E8C"), ("B", sentence_b, "#B45309")]:
+        words = sent.strip().split()
+        ffd = predict_ffd(sent)
+        feats = [_word_features(w, words, i) for i, w in enumerate(words)]
+        rows = "".join(
+            f'<tr><td>{ui.esc(w)}</td><td class="c">{f["wlen"]}</td><td class="c">{f["wiki_freq"]:.1f}</td>'
+            f'<td class="c">{f["aoa_mean"]:.1f}</td><td class="c"><b>{v:.0f}</b></td></tr>'
+            for w, f, v in zip(words, feats, ffd))
+        tag = "orange" if name == harder else ""
+        parts.append(f"""<div class="card">
+<span class="tag {tag}">Sentence {name}{" · harder" if name == harder else ""}</span>
+<p class="muted" style="margin-top:6px">{len(words)} words · mean predicted first fixation <b>{np.mean(ffd):.0f} ms</b></p>
+{ui.bars(words, [("predicted first fixation (ms)", ffd, colour)], " ms")}
+<details style="margin-top:8px"><summary>Step 1 · the features of every word</summary>
+<table class="t" style="margin-top:6px"><tr><th>Word</th><th class="c">Letters</th><th class="c">log frequency</th>
+<th class="c">Age learned</th><th class="c">Predicted FFD (ms)</th></tr>{rows}</table></details></div>""")
+    return ui.wrap(f"""
+<div class="verdict {"orange" if harder == "B" else ""}">Sentence {harder} is harder to read
+ ({conf * 100:.1f}% confident)</div>
+<p class="muted">Step 2 · System 1 predicted how long readers look at each word (0 ms = readers usually skip it).
+Step 3 · System 2 compared the two lists and decided.</p>
+<div class="grid g2">{"".join(parts)}</div>""")
+
+
+def phase2_view(sentence):
+    md, table = phase2.analyze(sentence, _word_features)
+    if table is None:
+        return ui.wrap(f"<p>{ui.esc(md)}</p>"), None
+    words = table["Word"].tolist()
+    surp = table["GPT-2 surprisal (nats)"]
+    hard = table.loc[table["TD (ms)"].idxmax(), "Word"]
+    top = table.loc[surp.idxmax(), "Word"]
+    body = f"""
+<div class="grid g3">
+ <div class="card blue"><span class="tag">Most surprising word</span><div class="big" style="margin-top:6px">{ui.esc(top)}</div>
+  <p class="muted">GPT-2 surprisal {surp.max():.2f}</p></div>
+ <div class="card orange"><span class="tag orange">Longest reading time</span><div class="big orange" style="margin-top:6px">{ui.esc(hard)}</div>
+  <p class="muted">{int(table["TD (ms)"].max())} ms total time</p></div>
+ <div class="card"><span class="tag grey">Whole sentence</span><div class="big" style="margin-top:6px">{int(table["TD (ms)"].sum())} ms</div>
+  <p class="muted">without GPT-2: {int(table["TD without GPT-2 (ms)"].sum())} ms</p></div>
+</div>
+<div class="grid g2" style="margin-top:12px">
+ <div class="card"><h3 style="margin-top:0">Step 1 · How surprising is each word? (GPT-2)</h3>
+  {ui.bars(words, [("surprisal", surp, "#1F4E8C")], "", "{:.2f}")}</div>
+ <div class="card"><h3 style="margin-top:0">Step 2 · Predicted total reading time (TD)</h3>
+  {ui.bars(words, [("with GPT-2", table["TD (ms)"], "#B45309"), ("without GPT-2", table["TD without GPT-2 (ms)"], "#9AA5B1")], " ms")}</div>
+</div>
+<p class="muted">Look for words where the orange bar is longer than the grey one: GPT-2 found them surprising,
+so readers are predicted to slow down there. All four measures are in the table below.</p>"""
+    return ui.wrap(body), table
+
+
+EX_HARD = "ரஞ்சுவின் கிராமத்தில் உள்ள நீர்நிலை வறண்டுவிடுகிறது, தண்ணீரைக் கண்டுபிடிக்க அவள் புறப்படுகிறாள்."
+EX_EASY = "அப்புறம், அதற்கு என்ன ஆகின்றது என்று பாருங்கள்."
 
 with gr.Blocks(title="Sentence Difficulty Toolkit") as demo:
-    gr.Markdown("# Sentence Difficulty Toolkit\nMeasuring and reducing sentence difficulty in English and Tamil.")
+    gr.HTML(ui.wrap('<h2 style="margin-bottom:0">Sentence Difficulty Toolkit</h2>'
+                    '<p class="muted">M.Tech project · Bhagyalaxmi Pandiyan (M25DE2070) · '
+                    'supervisor Dr. Sidharth Ranjan · IIT Jodhpur</p>'))
 
-    with gr.Tab("English · Phase 1"):
-        gr.Markdown(
-            "Predicts which of two sentences is harder to read, based on predicted eye-tracking "
-            "reading times (System 1) fed into a pairwise readability classifier (System 2). "
-            "Replication + extension of Singh et al. (2016)."
-        )
-        en_a = gr.Textbox(label="Sentence A", placeholder="e.g. The quick brown fox jumps over the lazy dog.")
-        en_b = gr.Textbox(label="Sentence B", placeholder="e.g. The expeditious auburn vulpine traverses the indolent canine.")
-        en_btn = gr.Button("Compare", variant="primary")
-        en_out = gr.Markdown()
+    with gr.Tab("Home"):
+        gr.HTML(ui.HOME)
+
+    with gr.Tab("Phase 1 · English"):
+        gr.HTML(ui.PHASE1_INTRO)
+        with gr.Row():
+            en_a = gr.Textbox(label="Sentence A", placeholder="e.g. The dog ran to the park.")
+            en_b = gr.Textbox(label="Sentence B",
+                              placeholder="e.g. The committee's protracted deliberations culminated in an unanticipated resolution.")
+        en_btn = gr.Button("Which sentence is harder?", variant="primary")
         gr.Examples(
             [["The dog ran to the park.",
-              "The canine proceeded expeditiously towards the municipal recreational grounds."],
+              "The committee's protracted deliberations culminated in an unanticipated resolution."],
              ["Photosynthesis is the biochemical process whereby chlorophyll-containing organisms "
               "convert electromagnetic radiation into chemical energy.",
               "Plants use sunlight to make food."]],
-            inputs=[en_a, en_b],
-        )
-        en_btn.click(compare_sentences, [en_a, en_b], en_out)
+            inputs=[en_a, en_b])
+        en_out = gr.HTML()
+        en_btn.click(phase1_view, [en_a, en_b], en_out)
 
-    with gr.Tab("English · Phase 2 (GPT-2)"):
-        gr.Markdown(
-            "Word-by-word reading times. Type one English sentence: GPT-2 measures how surprising "
-            "each word is, and System 1 predicts how long readers look at it (Dundee measures FFD, "
-            "FPD, RPD, TD). Adding GPT-2 surprisal improves all four measures on the Dundee test set "
-            "(R², higher is better):\n\n" + phase2.r2_table()
-        )
-        p2_in = gr.Textbox(label="English sentence",
-                           placeholder="e.g. The old man the boats while the children sleep.")
+    with gr.Tab("Phase 2 · GPT-2"):
+        gr.HTML(ui.PHASE2_INTRO)
+        p2_in = gr.Textbox(label="English sentence", placeholder="e.g. I drank a cup of hot elephant this morning.")
         p2_btn = gr.Button("Predict reading times", variant="primary")
-        p2_out = gr.Markdown()
-        p2_table = gr.Dataframe(label="Per word", wrap=True)
-        gr.Examples([["The cat sat on the mat."],
-                     ["The horse raced past the barn fell."],
+        gr.Examples([["I drank a cup of hot coffee this morning."],
+                     ["I drank a cup of hot elephant this morning."],
                      ["Despite the ostensibly benign forecast, the expedition encountered a ferocious blizzard."]],
                     inputs=[p2_in])
-        p2_btn.click(lambda s: phase2.analyze(s, _word_features), [p2_in], [p2_out, p2_table])
+        p2_out = gr.HTML()
+        with gr.Accordion("All four reading times per word (FFD, FPD, RPD, TD)", open=False):
+            p2_table = gr.Dataframe(wrap=True)
+        p2_btn.click(phase2_view, [p2_in], [p2_out, p2_table])
 
-    with gr.Tab("Tamil · Phase 3"):
-        gr.Markdown(
-            "Predicts which of two Tamil sentences is harder to read, using the thesis's "
-            "word-level difficulty metric (a pairwise classifier trained on StoryWeaver "
-            "reading levels). Wait about a minute after start-up for the Tamil models to load."
-        )
-        gr.Markdown("### ① Compare two sentences")
-        ta_a = gr.Textbox(label="Sentence A")
-        ta_b = gr.Textbox(label="Sentence B")
-        ta_btn = gr.Button("Compare", variant="primary")
-        ta_out = gr.Markdown()
-        gr.Examples(tamil.EXAMPLES, inputs=[ta_a, ta_b])
-        ta_btn.click(tamil.compare_two, [ta_a, ta_b], ta_out)
+    with gr.Tab("Phase 3 · Tamil"):
+        gr.HTML(ui.wrap('<p class="muted">The Tamil models take about a minute to load after start-up.</p>'))
+        with gr.Tab("① How we did it"):
+            gr.HTML(ui.PHASE3_STORY)
 
-        gr.Markdown("---\n### ② Analyse one sentence: word-level vs morphology-aware metric")
-        an_in = gr.Textbox(label="Tamil sentence", lines=2)
-        an_btn = gr.Button("Analyse", variant="primary")
-        an_out = gr.Markdown()
-        an_morph = gr.Dataframe(label="Step 1 · Word by word: every number the features are built from", wrap=True)
-        an_feats = gr.Dataframe(label="Step 2 · The 12 sentence features and how each metric adds them up", wrap=True)
-        gr.Examples([[tamil.EXAMPLE]], inputs=[an_in])
-        an_btn.click(tamil.analyze, [an_in], [an_out, an_morph, an_feats])
+        with gr.Tab("② Analyse a sentence"):
+            gr.HTML(ui.ANALYSE_INTRO)
+            an_in = gr.Textbox(label="Tamil sentence", lines=2)
+            an_btn = gr.Button("Analyse", variant="primary")
+            gr.Examples([[EX_HARD], [EX_EASY]], inputs=[an_in])
+            an_top = gr.HTML()
+            an_cards = gr.HTML()
+            with gr.Accordion("Proof · every number per word (the 12 features are averages of these columns)", open=False):
+                an_words = gr.Dataframe(wrap=True)
+            with gr.Accordion("Proof · how each metric adds weight × feature into its score", open=False):
+                an_proof = gr.Dataframe(wrap=True)
+            an_btn.click(tamil.analyze_view, [an_in], [an_top, an_cards, an_words, an_proof])
 
-        gr.Markdown("---\n### ③ Simplify and check: LLM simplification + both metrics + human study\n"
-                    "Type a sentence and press **Simplify with Gemini** (live, free tier), "
-                    "or pick one of the 30 StoryWeaver pairs from the human study. Then press **Compare**.")
-        with gr.Row():
-            sp_pick = gr.Dropdown(list(tamil.PAIRS), label="Or load a study pair (StoryWeaver)", value=None)
-        sp_orig = gr.Textbox(label="Original", lines=2)
-        sp_gem = gr.Button("Simplify with Gemini")
-        sp_simp = gr.Textbox(label="Simplified (you can edit it)", lines=3)
-        sp_msg = gr.Markdown()
-        sp_btn = gr.Button("Compare original vs simplified", variant="primary")
-        sp_out = gr.Markdown()
-        sp_feats = gr.Dataframe(label="Feature changes", wrap=True)
-        sp_pick.change(tamil.load_pair, [sp_pick], [sp_orig, sp_simp, sp_msg])
-        sp_gem.click(tamil.simplify, [sp_orig], [sp_simp, sp_msg])
-        sp_btn.click(tamil.compare, [sp_orig, sp_simp], [sp_out, sp_feats])
+        with gr.Tab("③ Which is harder?"):
+            gr.HTML(ui.wrap("<h3>③ Compare two Tamil sentences</h3><p class='muted'>The Tamil version of "
+                            "System 2: the word metric decides, and the morph metric is shown as agree / disagree.</p>"))
+            with gr.Row():
+                ta_a = gr.Textbox(label="Sentence A", lines=2)
+                ta_b = gr.Textbox(label="Sentence B", lines=2)
+            ta_btn = gr.Button("Which sentence is harder?", variant="primary")
+            gr.Examples([[EX_EASY, EX_HARD]] + tamil.EXAMPLES, inputs=[ta_a, ta_b])
+            ta_out = gr.HTML()
+            ta_btn.click(tamil.compare_two_view, [ta_a, ta_b], ta_out)
+
+        with gr.Tab("④ Simplify"):
+            gr.HTML(ui.wrap(
+                "<h3>④ Simplify a hard sentence and check it</h3>"
+                + ui.flow([("1 · Hard sentence", "type one, or load one of the 30 StoryWeaver pairs from the human study"),
+                           ("2 · LLM rewrites it", "Gemini, with the same prompt as the thesis (or the saved study version)"),
+                           ("3 · Both metrics score it", "did the level go down?"),
+                           ("4 · Human check", "for study pairs: what the native readers said")])))
+            sp_pick = gr.Dropdown(list(tamil.PAIRS), label="Load a study pair (StoryWeaver, rated by native readers)",
+                                  value=None)
+            with gr.Row():
+                sp_orig = gr.Textbox(label="Original (hard)", lines=3)
+                sp_simp = gr.Textbox(label="Simplified (you can edit it)", lines=3)
+            with gr.Row():
+                sp_gem = gr.Button("Simplify with Gemini")
+                sp_btn = gr.Button("Compare original vs simplified", variant="primary")
+            sp_msg = gr.Markdown()
+            sp_human = gr.HTML()
+            sp_out = gr.HTML()
+            sp_pick.change(tamil.load_pair_view, [sp_pick], [sp_orig, sp_simp, sp_human])
+            sp_gem.click(tamil.simplify, [sp_orig], [sp_simp, sp_msg])
+            sp_btn.click(tamil.compare_view, [sp_orig, sp_simp], sp_out)
 
 
 if __name__ == "__main__":
-    demo.launch(share=True)
+    import sys
+    # Local only by default (http://127.0.0.1:7860). Add --share for a temporary public link.
+    demo.launch(share="--share" in sys.argv, css=ui.CSS, js=ui.FORCE_LIGHT, theme=gr.themes.Soft(primary_hue="blue"))
