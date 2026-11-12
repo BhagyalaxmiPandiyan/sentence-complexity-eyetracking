@@ -62,7 +62,23 @@ FEATURE_LABELS = [
     ("feats_per_word", "Marked grammar features per word", "B · morphology"),
     ("lemma_zipf", "Mean dictionary-form frequency (Zipf)", "B · morphology"),
     ("nonfinite_verbs", "Non-finite verbs (participles, converbs …)", "B · morphology"),
+    ("tree_depth", "Dependency tree depth", "C · syntax (not in either metric)"),
+    ("dep_distance", "Mean word-to-head distance", "C · syntax (not in either metric)"),
 ]
+HOW = {   # how each sentence value is built from the word table (shown in the feature table)
+    "n_words": "count of words",
+    "word_len": "mean of 'Letters'",
+    "word_zipf": "mean of 'Word freq.' (Tamil words only)",
+    "word_surprisal": "mean of 'GPT-2 surpr.'",
+    "morphs_per_word": "mean of '# parts'",
+    "stem_surprisal": "mean of 'Stem surpr.'",
+    "suffix_surprisal": "mean of 'Suffix surpr.'",
+    "feats_per_word": "sum of '# marks' ÷ words",
+    "lemma_zipf": "mean of 'Root freq.'",
+    "nonfinite_verbs": "count of 'Non-finite' = yes",
+    "tree_depth": "largest 'Depth'",
+    "dep_distance": "mean of 'Distance'",
+}
 
 # ── loading (in a background thread, so the English tab starts at once) ──────
 _ready = threading.Event()
@@ -109,36 +125,82 @@ def nearest_level(metric, value):
     return int((lv - value).abs().idxmin())
 
 
-def morpheme_table(text):
-    """One row per word: Morfessor morphemes + Stanza lemma / POS / marked features."""
-    seg, nlp = _state["tools"][0], _state["tools"][1]
-    info = []
+WORD_COLS = ["Word", "Letters", "Word freq.", "GPT-2 surpr.", "Morphemes (Morfessor)", "# parts",
+             "Stem surpr.", "Suffix surpr.", "Root (Stanza)", "Root freq.", "Grammar marks", "# marks",
+             "Non-finite", "Depends on", "Distance", "Depth"]
+
+
+def word_table(text):
+    """One row per word with every number the 12 sentence features are built from.
+    Uses exactly the step-3 rules (s3.char_surprisal, s3.WORD, Morfessor, Stanza), so the
+    column means equal the sentence features for a one-sentence input."""
+    from wordfreq import zipf_frequency
+    seg, nlp, tok, lm = _state["tools"]
+    rows = []
     for p in [p for p in SENT_END.split(text.strip()) if TAMIL_CHAR.search(p)]:
+        per_char = s3.char_surprisal(p, tok, lm)
+        info = {}                                   # Stanza token start offset -> parse info
         for s in nlp(p).sentences:
+            by_id = {w.id: w for w in s.words}
             for t in s.tokens:
                 ws = [w for w in t.words if w.upos != "PUNCT"]
                 if not ws:
                     continue
                 feats = [f for w in ws for f in ((w.feats or "").split("|") if w.feats else [])]
                 marked = [f for f in feats if f not in s3.UNMARKED and not f.startswith(s3.IGNORED)]
-                info.append({
-                    "word": t.text,
+                w0 = ws[0]
+                depth, h = 0, w0.id
+                while h and depth < 100:
+                    h = by_id[h].head if h in by_id else 0
+                    depth += 1
+                head = by_id.get(w0.head)
+                lz = [zipf_frequency(w.lemma, "ta") for w in ws if w.lemma and s3.TAMIL.search(w.lemma)]
+                info[t.start_char] = {
                     "lemma": " + ".join(w.lemma or "" for w in ws),
-                    "pos": " + ".join(w.upos for w in ws),
-                    "marked": ", ".join(marked) or "–",
+                    "lemma_z": round(float(np.mean(lz)), 2) if lz else "",
+                    "marked": ", ".join(m.split("=")[1] if "=" in m else m for m in marked) or "–",
+                    "n_marked": len(marked),
                     "nonfinite": "yes" if s3.NONFINITE & set(feats) else "",
-                })
+                    "head": head.text if head else "(main verb)",
+                    "dist": abs(w0.id - w0.head) if w0.head else "",
+                    "depth": depth,
+                }
+        for m in s3.WORD.finditer(p):
+            w = m.group()
+            morphs = [w]
+            if s3.TAMIL.fullmatch(w):
+                seg_m = seg.morph_analyze(w)
+                if "".join(seg_m) == w:             # same rule as step 3
+                    morphs = seg_m
+            stem_end = m.start() + len(morphs[0])
+            d = info.get(m.start(), {})
+            rows.append([
+                w, len(w),
+                round(zipf_frequency(w, "ta"), 2) if s3.TAMIL.fullmatch(w) else "",
+                round(float(per_char[m.start():m.end()].sum()), 2),
+                " + ".join(morphs), len(morphs),
+                round(float(per_char[m.start():stem_end].sum()), 2),
+                round(float(per_char[stem_end:m.end()].sum()), 2),
+                d.get("lemma", ""), d.get("lemma_z", ""), d.get("marked", ""), d.get("n_marked", ""),
+                d.get("nonfinite", ""), d.get("head", ""), d.get("dist", ""), d.get("depth", ""),
+            ])
+    return pd.DataFrame(rows, columns=WORD_COLS)
+
+
+def feature_proof(f):
+    """Sentence features with how each is computed and what it adds to each metric's score."""
     rows = []
-    for d in info:
-        w = d["word"]
-        morphs = [w]
-        if s3.TAMIL.fullmatch(w):
-            m = seg.morph_analyze(w)
-            if "".join(m) == w:                     # same rule as step 3
-                morphs = m
-        rows.append([w, " + ".join(morphs), len(morphs), d["lemma"], d["pos"], d["marked"], d["nonfinite"]])
-    return pd.DataFrame(rows, columns=["Word", "Morphemes (Morfessor)", "# morphemes",
-                                       "Dictionary form (Stanza)", "POS", "Marked features", "Non-finite verb"])
+    weights = {name: dict(zip(cols, w)) for name, (cols, w) in _state["metrics"].items()}
+    for col, label, group in FEATURE_LABELS:
+        v = float(f[col])
+        cw, cm = weights["word"].get(col), weights["morph"].get(col)
+        rows.append([label, group, round(v, 2), HOW[col],
+                     f"{cw:+.3f} × {v:.2f} = {cw * v:+.2f}" if cw is not None else "–",
+                     f"{cm:+.3f} × {v:.2f} = {cm * v:+.2f}" if cm is not None else "–"])
+    sc = text_scores(f)
+    rows.append(["SCORE = sum of the column above", "", "", "", f"{sc['word']:+.2f}", f"{sc['morph']:+.2f}"])
+    return pd.DataFrame(rows, columns=["Feature", "Group", "Value", "How it is computed",
+                                       "Word metric: weight × value", "Morph metric: weight × value"])
 
 
 def _feature_rows(fs):
@@ -160,8 +222,12 @@ def analyze(text):
         f"(StoryWeaver level 1 = easiest, 4 = hardest)."
         + (f" Text has {n} sentences; features are averaged over them." if n > 1 else "")
     )
-    feats = pd.DataFrame(_feature_rows([f]), columns=["Feature", "Group", "Value"])
-    return md, morpheme_table(text), feats
+    md += ("\n\n**How to read the tables below:** the word table shows every number per word "
+           "(Morfessor parts, Stanza root and grammar marks, Tamil GPT-2 surprisal in bits, "
+           "frequency on the 0–7 Zipf scale, where 0 = not in the list). The feature table shows "
+           "how each sentence value comes from that word table, and how weight × value adds up "
+           "to each metric's score.")
+    return md, word_table(text), feature_proof(f)
 
 
 def _gemini_key():

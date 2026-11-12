@@ -192,8 +192,8 @@ with gr.Blocks(title="Sentence Difficulty Toolkit") as demo:
         an_in = gr.Textbox(label="Tamil sentence", lines=2)
         an_btn = gr.Button("Analyse", variant="primary")
         an_out = gr.Markdown()
-        an_morph = gr.Dataframe(label="Morpheme breakdown (Morfessor + Stanza)", wrap=True)
-        an_feats = gr.Dataframe(label="The thesis features (A = word-level, B = morphology)", wrap=True)
+        an_morph = gr.Dataframe(label="Step 1 · Word by word: every number the features are built from", wrap=True)
+        an_feats = gr.Dataframe(label="Step 2 · The 12 sentence features and how each metric adds them up", wrap=True)
         gr.Examples([[tamil.EXAMPLE]], inputs=[an_in])
         an_btn.click(tamil.analyze, [an_in], [an_out, an_morph, an_feats])
 
