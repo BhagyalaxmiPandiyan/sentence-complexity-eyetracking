@@ -15,6 +15,7 @@ Everything runs on this laptop with `C:\Python313\python.exe`. Just double-click
 | Double-click | What happens | Time |
 |---|---|---|
 | **`START_TOOLKIT.bat`** | Starts the live demo and opens it in the browser at http://127.0.0.1:7860. Keep the black window open; close it to stop. | browser opens in ~20 s; Phase 2 and 3 ready after 1–2 min |
+| **`START_WEBCAM_DEMO.bat`** | Webcam eye-tracking demo (Phase 3 data-collection app, `?demo=1`): quick calibration, 3 Tamil sentences, then FFD / FPD / RPD / TD of every word on screen. Saves and uploads nothing. Needs a webcam and internet. | ~2 min |
 | **`RUN_PIPELINE.bat`** | A menu that re-runs the pipeline steps and prints the thesis numbers (see below). | 10 s – 4 min per option |
 
 **`RUN_PIPELINE.bat` menu**
@@ -44,6 +45,7 @@ The thesis: **[thesis_report/](thesis_report/)** (PDF and Word, plus the source 
 Final One/
 ├── README.md                   ← you are here
 ├── START_TOOLKIT.bat           ▶ double-click: live demo in the browser
+├── START_WEBCAM_DEMO.bat       ▶ double-click: webcam eye-tracking demo (3 sentences)
 ├── RUN_PIPELINE.bat            ▶ double-click: re-run steps, print thesis numbers
 ├── REPLICATION.md              every step from raw data, with expected numbers
 ├── phase1_replication/         Phase 1 + Phase 2 (English)

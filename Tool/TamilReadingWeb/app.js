@@ -10,6 +10,8 @@ const VERSION = "tamil-webgaze-1.0";
 const STORE_KEY = "tamil_webgaze_state";
 const $app = document.getElementById("app");
 const MOUSE = new URLSearchParams(location.search).get("gaze") === "mouse";
+// ?demo=1: 3 sentences, quick calibration, results shown on screen; nothing saved or uploaded
+const DEMO = new URLSearchParams(location.search).has("demo");
 
 // ---------- small helpers ----------
 const load = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
@@ -74,7 +76,7 @@ const SCREEN = {}, FIRST_WNUM = {}, FREQ = new Map();
 
 // ---------- state + upload queue (survives a page reload) ----------
 let state = null; // {pid, info, order, next, practiceDone, fxno, pending, results}
-const persist = () => save(STORE_KEY, state);
+const persist = () => { if (!DEMO) save(STORE_KEY, state); };
 
 let flushing = false;
 async function flush() {
@@ -101,6 +103,7 @@ async function flush() {
 }
 function record(payload) {
   payload = { version: VERSION, pid: state.pid, ts: new Date().toISOString(), ...payload };
+  if (DEMO) { state.results.push(payload); return; } // demo: kept in memory only
   if (CONFIG.ENDPOINT) state.pending.push(payload);
   else state.results.push(payload); // test mode: kept for the download
   persist();
@@ -188,6 +191,7 @@ async function screenConnectionCheck() {
 
 function screenWelcome() {
   if (new URLSearchParams(location.search).get("check")) { screenConnectionCheck(); return; }
+  if (DEMO && deviceOK()) { screenDemo(); return; }
   if (!deviceOK()) {
     show(`<div class="card"><h1>தமிழ் வாசிப்பு ஆய்வு</h1>
       <p>இந்த ஆய்வை <b>வெப்கேமரா உள்ள கணினியில் (லேப்டாப் / டெஸ்க்டாப்)</b> மட்டுமே செய்ய முடியும்.
@@ -367,8 +371,8 @@ async function screenCamera() {
     document.getElementById("go").onclick = async () => {
       try { await document.documentElement.requestFullscreen(); } catch (e) { /* fullscreen not allowed */ }
       showCamera(false);
-      await calibrateAndValidate("start", CONFIG.CAL_CLICKS);
-      screenInstructions();
+      await calibrateAndValidate("start", DEMO ? 3 : CONFIG.CAL_CLICKS);
+      if (DEMO) runDemo(); else screenInstructions();
     };
   };
 }
@@ -427,7 +431,7 @@ async function calibrateAndValidate(label, clicks) {
     await calibrate(clicks);
     const v = await validate(attempt === 1 ? label : `${label}_retry${attempt - 1}`);
     const good = v.points_with_data >= 6 && v.median_error_px !== "" && v.median_error_px <= CONFIG.MAX_ERROR_PX;
-    if (good || MOUSE || attempt >= 3) return v;
+    if (good || MOUSE || DEMO || attempt >= 3) return v;
     show(`<div class="card"><h2>துல்லியம் குறைவு / Accuracy is low</h2>
       <p>கண் கண்காணிப்பு போதுமான துல்லியமாக இல்லை (${v.median_error_px || "?"} px). ஒளியைச் சரிசெய்து, தலையை அசைக்காமல்
       மீண்டும் அளவீடு செய்வோம்.</p>
@@ -489,7 +493,7 @@ async function runTrial(sid, practice, trialNo) {
   dotEl.className = "fixdot";
   dotEl.style.left = `${dot.x - 10}px`; dotEl.style.top = `${dot.y - 10}px`;
   text.parentNode.appendChild(dotEl);
-  const progress = practice ? "பயிற்சி / Practice"
+  const progress = DEMO ? `Demo ${trialNo}/${state.order.length}` : practice ? "பயிற்சி / Practice"
     : `பகுதி ${Math.floor((trialNo - 1) / CONFIG.BLOCK_SIZE) + 1}/4 · ${trialNo}/${state.order.length}`;
   document.getElementById("hint").textContent =
     `${progress}  —  புள்ளியைப் பார்த்து SPACE அழுத்தவும் / Look at the dot and press SPACE`;
@@ -522,7 +526,7 @@ async function runTrial(sid, practice, trialNo) {
 
   // Comprehension question
   const answer = { probe_word: "", probe_answer: "", response: "", correct: "", answer_rt_ms: "" };
-  if (item.probe) {
+  if (item.probe && !DEMO) {
     show(`<div class="card"><h2>இந்தச் சொல் நீங்கள் இப்போது படித்த வாக்கியத்தில் இருந்ததா?</h2>
       <p class="en">Was this word in the sentence you just read?</p>
       <div class="probe-word">${esc(item.probe.word)}</div>
@@ -617,6 +621,52 @@ async function screenEnd() {
        check your internet and keep this page open.</span>`
     : `உங்கள் தரவு சேமிக்கப்பட்டது. இந்தச் சாளரத்தை மூடலாம். <span class="en">Your data has been saved. You can close this window.</span>`;
   if (!state.pending.length) localStorage.removeItem(STORE_KEY);
+}
+
+// ---------- demo mode (?demo=1) ----------
+function demoSentences() {
+  // one easy, one medium, one hard sentence of about 7 words
+  return ["easy", "medium", "hard"].map(band => STIMULI.filter(s => s.band === band)
+    .sort((a, b) => Math.abs(a.text.split(/\s+/).length - 7) - Math.abs(b.text.split(/\s+/).length - 7))[0].sid);
+}
+
+function screenDemo() {
+  state = { version: VERSION, pid: "DEMO", next: 0, practiceDone: true, fxno: 0, pending: [], results: [],
+            info: {}, order: demoSentences() };
+  show(`<div class="card"><h1>Tamil Reading Study · demo</h1>
+    <p class="banner">DEMO MODE — 3 sentences (easy, medium, hard). Nothing is saved or uploaded.</p>
+    <ol>
+      <li><b>Camera</b>: allow the camera and sit so your face is in the green box.</li>
+      <li><b>Calibration</b>: look at each red dot and click it 3 times; then just look at the 9 yellow dots.</li>
+      <li><b>Reading</b>: look at the dot on the left and press <kbd>SPACE</kbd>; read the sentence normally;
+          press <kbd>ENTER</kbd> when finished.</li>
+      <li><b>Results</b>: the reading measures of every word appear on screen (FFD, FPD, RPD, TD).</li>
+    </ol>
+    <button class="btn" id="go">Start / தொடங்கு</button></div>`);
+  document.getElementById("go").onclick = screenCamera;
+}
+
+async function runDemo() {
+  for (let i = 0; i < state.order.length; i++) await runTrial(state.order[i], false, i + 1);
+  try { if (document.fullscreenElement) await document.exitFullscreen(); } catch (e) { /* ignore */ }
+  if (!MOUSE) { try { webgazer.end(); } catch (e) { /* ignore */ } }
+  const val = state.results.find(r => r.type === "validation");
+  const sents = state.results.filter(r => r.type === "sentence");
+  const block = r => {
+    const s = r.sentence, words = r.words || [];
+    const rows = words.map(w => `<tr><td class="ta">${esc(w.WORD)}</td><td>${w.WLEN}</td><td>${w.N_FIX}</td>
+      <td>${w.FFD}</td><td>${w.FPD}</td><td>${w.RPD}</td><td><b>${w.TD}</b></td></tr>`).join("");
+    return `<h2>${esc(s.band)} sentence · ${(s.reading_time_ms / 1000).toFixed(1)} s ·
+      ${s.sentence_ok ? "quality OK" : "quality low (noisy gaze)"}</h2>
+      <table class="keys demo"><tr><th>Word</th><th>Letters</th><th>Fixations</th><th>FFD</th><th>FPD</th>
+      <th>RPD</th><th>TD (ms)</th></tr>${rows}</table>`;
+  };
+  show(`<div class="card wide"><h1>Your reading, word by word</h1>
+    <p class="en">Gaze accuracy after calibration: <b>${val && val.median_error_px !== "" ? val.median_error_px + " px" : "n/a"}</b>.
+    FFD = first fixation, FPD = first pass, RPD = regression path (includes looking back), TD = total time on the word.
+    The same measures as the Dundee corpus, computed in the browser with the same code as the study.</p>
+    ${sents.map(block).join("")}
+    <button class="btn" onclick="location.reload()">Run the demo again</button></div>`);
 }
 
 screenWelcome();
